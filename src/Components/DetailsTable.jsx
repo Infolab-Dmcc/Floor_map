@@ -25,7 +25,7 @@ export default function DetailsTable() {
                         isCompact
                         showControls
                         showShadow
-                        color="secondary"
+                        color="#0F81C7"
                         page={page}
                         total={pages}
                         onChange={(page) => setPage(page)}
