@@ -8,6 +8,7 @@ import NewFloor from "./Pages/NewFloor";
 import MyFloors from "./Pages/MyFloors";
 import { HTML5Backend } from "react-dnd-html5-backend";
 import { DndProvider } from "react-dnd";
+import NewFloor2 from "./Pages/NewFloor2";
 
 function App() {
   const routers = createBrowserRouter([
@@ -17,6 +18,7 @@ function App() {
       children: [
         { index: true, element: <Dashboard /> },
         { path: "NewFloor", element: <NewFloor /> },
+        { path: "NewFloor2", element: <NewFloor2 /> },
         { path: "AddFloor", element: <MyFloors /> },
       ],
     },
