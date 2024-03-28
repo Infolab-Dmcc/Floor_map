@@ -75,7 +75,6 @@ const MyFloors = () => {
                         onBlur={formHandler.handleBlur}
                         value={formHandler.values.floor}
                         isInvalid={formHandler.touched.floor && formHandler.errors.floor}
-                    // errorMessage={formHandler.errors.floor}
                     >
                         {floors.map((Floor) => (
                             <SelectItem key={Floor} value={Floor}>
