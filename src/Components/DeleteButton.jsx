@@ -23,7 +23,6 @@ export function DeleteButton({ deleteImage }) {
                                     deleteImage()
                                     onClose()
                                 }}
-
                                 >
                                     Cancel
                                 </Button>
