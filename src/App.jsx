@@ -8,7 +8,23 @@ import NewFloor from "./Pages/NewFloor";
 import MyFloors from "./Pages/MyFloors";
 import { HTML5Backend } from "react-dnd-html5-backend";
 import { DndProvider } from "react-dnd";
-import NewFloor2 from "./Pages/NewFloor2";
+import PreviewFloor from "./Pages/PreviewFloor";
+import noval from "noval";
+import createState from "./utils/noval-helper/create-state";
+import createDispatch from "./utils/noval-helper/create-dispatcher";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+
+const ProviderNoval = noval(createState, createDispatch);
+
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      retry: false,
+      refetchOnReconnect: false,
+      refetchOnWindowFocus: false,
+    },
+  },
+});
 
 function App() {
   const routers = createBrowserRouter([
@@ -18,7 +34,7 @@ function App() {
       children: [
         { index: true, element: <Dashboard /> },
         { path: "NewFloor", element: <NewFloor /> },
-        { path: "NewFloor2", element: <NewFloor2 /> },
+        { path: "floor/:floorId", element: <PreviewFloor /> },
         { path: "AddFloor", element: <MyFloors /> },
       ],
     },
@@ -27,11 +43,15 @@ function App() {
   ]);
 
   return (
-    <NextUIProvider>
-      <DndProvider backend={HTML5Backend}>
-        <RouterProvider router={routers} />
-      </DndProvider>
-    </NextUIProvider>
+    <ProviderNoval>
+      <QueryClientProvider client={queryClient}>
+        <NextUIProvider>
+          <DndProvider backend={HTML5Backend}>
+            <RouterProvider router={routers} />
+          </DndProvider>
+        </NextUIProvider>
+      </QueryClientProvider>
+    </ProviderNoval>
   );
 }
 

@@ -6,7 +6,7 @@ export const setActive = (editor, element) => {
 export const addCircle = (editor, { x, y }) => {
   const top = y - 100 / 2;
   const left = x - 100 / 2;
-  const text = "circle";
+  const text = "";
   const circleBox = new fabric.Circle({
     radius: 50,
     strokeWidth: 2,
@@ -17,22 +17,23 @@ export const addCircle = (editor, { x, y }) => {
   });
   const textBox = new fabric.Textbox("text", {
     text,
-    fontSize: 16,
-    fill: "black",
+    fontSize: 20,
+    fill: "#fff",
     top: top + 70,
-    left: left + 35,
+    left: left + 50,
   });
   var group = new fabric.Group([circleBox, textBox]);
   editor.canvas.add(group);
   setActive(editor, group);
 };
 
-export const addTriangle = (editor, { x, y }) => {
-  const top = y - 100 / 2;
+export const addRectangle = (editor, { x, y }) => {
+  const top = y - 50 / 2;
   const left = x - 100 / 2;
-  const text = "triangle";
-  const triangleBox = new fabric.Triangle({
-    radius: 50,
+  const text = "";
+  const rectangleBox = new fabric.Rect({
+    width: 100,
+    height: 50,
     strokeWidth: 2,
     fill: "#76C70F61",
     stroke: "#76C70F",
@@ -41,12 +42,13 @@ export const addTriangle = (editor, { x, y }) => {
   });
   const textBox = new fabric.Textbox("text", {
     text,
-    fontSize: 16,
-    fill: "black",
-    top: top + 70,
-    left: left + 30,
+    fontSize: 20,
+    fill: "#fff",
+    width: 50,
+    top: top + 20,
+    left: left + 50,
   });
-  var group = new fabric.Group([triangleBox, textBox]);
+  var group = new fabric.Group([rectangleBox, textBox]);
   editor.canvas.add(group);
   setActive(editor, group);
 };
@@ -54,7 +56,7 @@ export const addTriangle = (editor, { x, y }) => {
 export const addRect = (editor, { x, y }) => {
   const top = y - 100 / 2;
   const left = x - 100 / 2;
-  const text = "rect";
+  const text = "";
   const rectBox = new fabric.Rect({
     width: 100,
     height: 100,
@@ -66,10 +68,11 @@ export const addRect = (editor, { x, y }) => {
   });
   const textBox = new fabric.Textbox("text", {
     text,
-    fontSize: 16,
-    fill: "black",
+    fontSize: 20,
+    fill: "#fff",
+    width: 50,
     top: top + 70,
-    left: left + 40,
+    left: left + 50,
   });
   var group = new fabric.Group([rectBox, textBox]);
   editor.canvas.add(group);

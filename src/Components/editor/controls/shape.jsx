@@ -19,6 +19,7 @@ export function Shape({ children, onAddShape, type }) {
             x: currentPageOffset?.x - currentOffset?.x,
             y: currentPageOffset?.y - currentOffset?.y,
           });
+          dropResult?.setCurrentShape()
         }
       },
       collect: (monitor) => {
@@ -35,7 +36,7 @@ export function Shape({ children, onAddShape, type }) {
   }, [offset]);
 
   return (
-    <div draggable ref={dragRef} style={{ opacity }} className="cursor-pointer">
+    <div draggable ref={dragRef} style={{ opacity }} className="cursor-pointer flex justify-center items-center">
       {children}
     </div>
   );

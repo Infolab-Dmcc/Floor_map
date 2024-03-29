@@ -4,35 +4,42 @@ import { useEffect, useRef } from "react";
 import { controlsInfo } from "./controls/helper";
 import { FabricJSCanvas, useFabricJSEditor } from "fabricjs-react";
 import { useDrop } from "react-dnd";
+import { useDispatch, useSelector } from "noval";
 
-const WorkSpace = ({
-  size,
-  imgUrl,
-  setValue,
-  callback,
-  defaultData,
-  setDownloadUrl,
-}) => {
+const WorkSpace = ({ size, imgUrl, defaultData }) => {
   const loaded = useRef(null);
   const canvasRef = useRef(null);
+  const { dispatch, reset } = useDispatch();
+  const mainEditor = useSelector("mainEditor");
   const { editor, onReady } = useFabricJSEditor();
 
-  const getData = () => {
-    const json = editor?.canvas.toObject();
-    json?.objects?.shift();
-    console.log("🚀 ~ getData ~ json:", json)
-
-    return {
-      json: json?.objects,
-      base64: editor?.canvas.toDataURL(),
-    };
-  };
-
-  const updateData = () => {
-    const { json, base64 } = getData();
-    // setValue("renderFloor", base64);
-    // setValue("floor", json || []);
-    setDownloadUrl && setDownloadUrl(base64);
+  const setCurrentShape = () => {
+    let element = mainEditor?.canvas?.getActiveObject();
+    if (!element)
+      return dispatch(
+        {
+          active: false,
+        },
+        "currentShape"
+      );
+    if (Array.isArray(element?._objects)) {
+      const shape = element?._objects?.[0];
+      element = element?._objects?.[1];
+      dispatch(
+        {
+          active: true,
+          color: shape.stroke,
+          value: element?.text,
+        },
+        "currentShape"
+      );
+    } else
+      dispatch(
+        {
+          active: false,
+        },
+        "currentShape"
+      );
   };
 
   const [{ isOver }, dropRef] = useDrop(() => ({
@@ -40,11 +47,13 @@ const WorkSpace = ({
     collect: (monitor) => ({
       isOver: monitor.isOver(),
     }),
-    drop: () => ({ name: "floorBox", canvas: canvasRef.current }),
+    drop: () => {
+      return { name: "floorBox", canvas: canvasRef.current, setCurrentShape };
+    },
   }));
 
-  const setData = (design) => {
-    editor?.canvas.loadFromJSON(design);
+  const setData = (sheet) => {
+    mainEditor?.canvas.loadFromJSON(sheet);
   };
 
   const setBackgroundImg = async (url, canvas, callback) => {
@@ -72,30 +81,37 @@ const WorkSpace = ({
   };
 
   useEffect(() => {
-    if (editor?.canvas && size?.width && !loaded?.current) {
+    if (mainEditor?.canvas && size?.width && !loaded?.current) {
       loaded.current = true;
 
-      editor?.canvas?.setWidth(size?.width);
-      editor?.canvas?.setHeight(size?.height);
+      mainEditor?.canvas?.setWidth(size?.width);
+      mainEditor?.canvas?.setHeight(size?.height);
       fabric.Object.prototype.cornerStyle = "circle";
       fabric.Object.prototype.cornerColor = "#1481ff";
       controlsInfo.forEach(({ name, state }) => {
         fabric.Object.prototype.setControlVisible(name, state);
       });
 
-      setBackgroundImg(imgUrl, editor.canvas, () => {
+      setBackgroundImg(imgUrl, mainEditor.canvas, () => {
         defaultData && setData(defaultData);
       });
-      editor.canvas.upperCanvasEl.onclick = updateData;
+      mainEditor.canvas.upperCanvasEl.onclick = setCurrentShape;
     }
-  }, [editor?.canvas, size, defaultData]);
+  }, [mainEditor, size, defaultData]);
+
+  useEffect(() => {
+    dispatch({ mainEditor: editor });
+    return () => reset("mainEditor");
+  }, [editor]);
 
   return (
     <div className="flex flex-col gap-2">
-      <Controls editor={editor} callback={callback} updateData={updateData} />
+      <Controls />
       <div className="" ref={dropRef} role="floorBox">
         <FabricJSCanvas
           onReady={(e) => {
+            console.log("🚀 ~ e:", e);
+            dispatch({ mainEditor: editor });
             canvasRef.current = e?.upperCanvasEl;
             onReady(e);
           }}

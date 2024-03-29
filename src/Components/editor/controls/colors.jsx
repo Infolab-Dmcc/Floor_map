@@ -1,5 +1,6 @@
-import React, { useState } from "react";
+import React from "react";
 import { Select, SelectItem } from "@nextui-org/react";
+import { useDispatch, useSelector } from "noval";
 
 const colors = [
   {
@@ -16,30 +17,33 @@ const colors = [
   },
 ];
 
-export function Colors({ updateCurrentSahpe }) {
-  const [value, setValue] = useState(colors[0].key);
+export function Colors() {
+  const { dispatch } = useDispatch();
+  const { color } = useSelector("currentShape");
 
   return (
     <Select
       name="colors"
       label="colors"
+      items={colors}
       placeholder="Select color"
       className="flex w-32 max-w-xs"
       onChange={(e) => {
         const color = e.target?.value;
-        setValue(e.target?.value);
-        updateCurrentSahpe({
-          fill: `${color}61`,
-          stroke: color,
-        });
+        if (color) {
+          dispatch("updateCurrentShape", {
+            fill: `${color}61`,
+            stroke: color,
+          });
+        }
       }}
-      value={value}
+      selectedKeys={[color]}
     >
-      {colors.map(({ label, key }) => (
+      {({ label, key }) => (
         <SelectItem key={key} value={key}>
           {label}
         </SelectItem>
-      ))}
+      )}
     </Select>
   );
 }
