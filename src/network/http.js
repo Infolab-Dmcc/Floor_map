@@ -14,22 +14,22 @@ export const http = axios.create({
     withCredentials: true,
 });
 
-http.interceptors.response.use(
-    (response) => response,
-    (error) => {
-        const response = error.response
-        if (response.status === 401 && response.config.url !== 'login') {
-            window.location.replace('/login')
-        }
-        return Promise.reject(error)
-    }
-)
+// http.interceptors.response.use(
+//     (response) => response,
+//     (error) => {
+//         const response = error.response
+//         if (response.status === 401 && response.config.url !== 'login') {
+//             window.location.replace('/login')
+//         }
+//         return Promise.reject(error)
+//     }
+// )
 
-http.interceptors.request.use((config) => {
-    const token = getToken()
-    if (token && 'login' !== config.url) {
-        // config.headers.Authorization = `bearer ${profile.accessToken}`
-        config.headers.Authorization = `${token}`
-    }
-    return config
-})
+// http.interceptors.request.use((config) => {
+//     const token = getToken()
+//     if (token && 'login' !== config.url) {
+//         // config.headers.Authorization = `bearer ${profile.accessToken}`
+//         config.headers.Authorization = `${token}`
+//     }
+//     return config
+// })

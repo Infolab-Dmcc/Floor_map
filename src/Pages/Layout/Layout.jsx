@@ -6,7 +6,7 @@ const Layout = () => {
         <div className="w-full h-screen flex " >
             <div className="h-full w-full flex flex-col" >
                 <NavBar />
-                <div className="bg-[#F5F8FF] w-full h-[calc(100%-50px)]" >
+                <div className=" w-full " >
                     <Outlet />
                 </div>
             </div>

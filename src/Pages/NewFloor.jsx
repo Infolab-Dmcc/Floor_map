@@ -7,6 +7,7 @@ import { useNavigate } from "react-router";
 import { IoMdCloudUpload } from "react-icons/io";
 import { DeleteButton } from "../Components/DeleteButton";
 import { Button, Select, SelectItem } from "@nextui-org/react";
+import { http } from "../network/http";
 
 const NewFloor = () => {
   const navigate = useNavigate();
@@ -160,7 +161,6 @@ const NewFloor = () => {
         id="Editor"
         className="bg-white  m-2 rounded-xl flex justify-center items-center shadow-sm "
       >
-        <DetailsTable />
       </div>
     </div>
   );
