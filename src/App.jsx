@@ -13,6 +13,7 @@ import noval from "noval";
 import createState from "./utils/noval-helper/create-state";
 import createDispatch from "./utils/noval-helper/create-dispatcher";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import NewPage from "./Pages/NewPage";
 
 const ProviderNoval = noval(createState, createDispatch);
 
@@ -36,6 +37,7 @@ function App() {
         { path: "add-floor", element: <NewFloor /> },
         { path: "floor/:floorId", element: <PreviewFloor /> },
         { path: "AddFloor", element: <MyFloors /> },
+        { path: "NewPage", element: <NewPage /> },
       ],
     },
     { path: "unauthorized", element: <UnAuthorized /> },
