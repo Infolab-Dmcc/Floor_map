@@ -19,7 +19,6 @@ export function Shape({ children, onAddShape, type }) {
             x: currentPageOffset?.x - currentOffset?.x,
             y: currentPageOffset?.y - currentOffset?.y,
           });
-          dropResult?.setCurrentShape()
         }
       },
       collect: (monitor) => {

@@ -31,7 +31,7 @@ const NavBar = () => {
                         </Link>
                     </DropdownItem>
                     <DropdownItem key="copy">
-                        <Link to={"/NewFloor"} >
+                        <Link to={"/add-floor"} >
                             <p>
                                 New Floor
                             </p>

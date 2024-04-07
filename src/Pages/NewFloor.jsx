@@ -1,30 +1,24 @@
-/* eslint-disable no-unused-vars */
 import { useFormik } from "formik";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import * as Yup from "yup";
 import DetailsTable from "../Components/DetailsTable";
 import { useNavigate } from "react-router";
 import { IoMdCloudUpload } from "react-icons/io";
 import { DeleteButton } from "../Components/DeleteButton";
 import { Button, Select, SelectItem } from "@nextui-org/react";
+import { useQuery } from "@tanstack/react-query";
 import { http } from "../network/http";
+
+const validationSchema = Yup.object({
+  building: Yup.string().required("required"),
+  city: Yup.string().required("required"),
+  floor: Yup.string().required("required"),
+});
 
 const NewFloor = () => {
   const navigate = useNavigate();
-  const [isLoading, setIsLoading] = useState(false);
-  const [buildings] = useState(["Building 1", "Building 2", "Building 3"]);
-  const [cities] = useState(["City 1", "City 2", "City 3"]);
-  const [floors] = useState(["Floor 1", "Floor 2", "Floor 3"]);
   const [file, setFile] = useState();
-
-  function handleChange(e) {
-    console.log(e.target.files);
-    setFile(URL.createObjectURL(e.target.files[0]));
-  }
-
-  function deleteImage() {
-    setFile(null);
-  }
+  const [isLoading, setIsLoading] = useState(false);
 
   const formHandler = useFormik({
     initialValues: {
@@ -32,26 +26,59 @@ const NewFloor = () => {
       city: "",
       floor: "",
     },
-    validationSchema: Yup.object({
-      building: Yup.string().required("required"),
-      city: Yup.string().required("required"),
-      floor: Yup.string().required("required"),
-    }),
-    onSubmit: async (values) => {
+    validationSchema,
+    onSubmit: async ({ floor }) => {
+      console.log("🚀 ~ onSubmit: ~ floor:", floor);
       // file
       const formData = new FormData();
       setIsLoading(true);
+      formData.append("floor_id", floor);
+      formData.append("image_data", file);
       try {
-        const res = await http.get(`/set_floor_map?setfloormap`, {
-          img: "",
-        });
-        navigate(`/floor/${res?.floor_id}`);
+        const res = await http.post(`/upload_floor_map`, formData);
+        navigate(`/floor/${res.data?.floor_id}`);
+        console.log("🚀 ~ onSubmit: ~ res:", res)
       } catch (e) {
         console.log("error", e);
       }
       setIsLoading(false);
     },
   });
+
+  const { building, city, floor } = formHandler.values;
+
+  const { data: citiesRes } = useQuery({
+    queryKey: ["citiesQuery"],
+    queryFn: async () => {
+      const res = await http.get(`/cities`);
+      return res.data;
+    },
+  });
+
+  const { data: buildingsRes } = useQuery({
+    queryKey: ["buildingsQuery", city],
+    queryFn: async () => {
+      const res = await http.get(`/buildings?city_id=${city}`);
+      return res.data;
+    },
+  });
+
+  const { data: floorsRes } = useQuery({
+    queryKey: ["floorsQuery", building],
+    queryFn: async () => {
+      const res = await http.get(`/floors?building_id=${building}`);
+      return res.data;
+    },
+  });
+
+  function handleChange(e) {
+    console.log(e.target.files);
+    setFile(e.target.files[0]);
+  }
+
+  function deleteImage() {
+    setFile(null);
+  }
 
   return (
     // Remove h-full after testing.
@@ -60,7 +87,7 @@ const NewFloor = () => {
         <div className="bg-white  w-4/5 m-2 rounded-xl flex justify-center items-center shadow-sm border-2 p-5">
           {file ? (
             <div className=" w-full flex flex-col justify-center items-center gap-4 ">
-              <img src={file} />
+              <img src={URL.createObjectURL(file)} />
               <DeleteButton deleteImage={deleteImage} />
             </div>
           ) : (
@@ -88,7 +115,7 @@ const NewFloor = () => {
         >
           <form
             onSubmit={formHandler.handleSubmit}
-            className="p-5 flex flex-col "
+            className="p-5 flex flex-col"
           >
             <h1 className="text-xl font-semibold mb-4 pl-1 underline">
               Connect to Floor:
@@ -100,13 +127,13 @@ const NewFloor = () => {
               className="max-w-xs mb-3"
               onChange={formHandler.handleChange}
               onBlur={formHandler.handleBlur}
-              value={formHandler.values.city}
+              value={city}
               isInvalid={formHandler.touched.city && formHandler.errors.city}
               errorMessage={formHandler.errors.city}
             >
-              {cities.map((City) => (
-                <SelectItem key={City} value={City}>
-                  {City}
+              {citiesRes?.data?.map(({ id, name }) => (
+                <SelectItem key={id} value={id}>
+                  {name}
                 </SelectItem>
               ))}
             </Select>
@@ -117,15 +144,15 @@ const NewFloor = () => {
               className="max-w-xs mb-3"
               onChange={formHandler.handleChange}
               onBlur={formHandler.handleBlur}
-              value={formHandler.values.building}
+              value={building}
               isInvalid={
                 formHandler.touched.building && formHandler.errors.building
               }
               errorMessage={formHandler.errors.building}
             >
-              {buildings.map((Building) => (
-                <SelectItem key={Building} value={Building}>
-                  {Building}
+              {buildingsRes?.data?.map(({ id, name }) => (
+                <SelectItem key={id} value={id}>
+                  {name}
                 </SelectItem>
               ))}
             </Select>
@@ -136,13 +163,13 @@ const NewFloor = () => {
               className="max-w-xs mb-5"
               onChange={formHandler.handleChange}
               onBlur={formHandler.handleBlur}
-              value={formHandler.values.floor}
+              value={floor}
               isInvalid={formHandler.touched.floor && formHandler.errors.floor}
               errorMessage={formHandler.errors.floor}
             >
-              {floors.map((Floor) => (
-                <SelectItem key={Floor} value={Floor}>
-                  {Floor}
+              {floorsRes?.data?.map(({ id, name }) => (
+                <SelectItem key={id} value={id}>
+                  {name}
                 </SelectItem>
               ))}
             </Select>
@@ -160,8 +187,7 @@ const NewFloor = () => {
       <div
         id="Editor"
         className="bg-white  m-2 rounded-xl flex justify-center items-center shadow-sm "
-      >
-      </div>
+      ></div>
     </div>
   );
 };

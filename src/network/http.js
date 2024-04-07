@@ -11,7 +11,7 @@ export const getToken = () => {
 
 export const http = axios.create({
     baseURL: `http://highnox.site/highnox`,
-    withCredentials: true,
+    // withCredentials: true,
 });
 
 // http.interceptors.response.use(

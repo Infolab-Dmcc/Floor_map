@@ -1,45 +1,50 @@
 import { fabric } from "fabric";
 import Controls from "./controls";
+import { useDrop } from "react-dnd";
 import { useEffect, useRef } from "react";
+import { useDispatch, useSelector } from "noval";
 import { controlsInfo } from "./controls/helper";
 import { FabricJSCanvas, useFabricJSEditor } from "fabricjs-react";
-import { useDrop } from "react-dnd";
-import { useDispatch, useSelector } from "noval";
 
-const WorkSpace = ({ size, imgUrl, defaultData }) => {
+const WorkSpace = ({ size, imgUrl, defaultData, isControlled = true }) => {
   const loaded = useRef(null);
   const canvasRef = useRef(null);
   const { dispatch, reset } = useDispatch();
   const mainEditor = useSelector("mainEditor");
   const { editor, onReady } = useFabricJSEditor();
 
-  const setCurrentShape = () => {
-    let element = mainEditor?.canvas?.getActiveObject();
-    if (!element)
-      return dispatch(
-        {
-          active: false,
-        },
-        "currentShape"
-      );
-    if (Array.isArray(element?._objects)) {
-      const shape = element?._objects?.[0];
-      element = element?._objects?.[1];
+  const setCurrentShape = (group) => {
+    if (Array.isArray(group?._objects)) {
+      const shape = group?._objects?.[0];
+      const element1 = group?._objects?.[1];
+      const element2 = group?._objects?.[2];
       dispatch(
         {
           active: true,
-          color: shape.stroke,
-          value: element?.text,
+          color: shape.fill,
+          value: element2?.text,
+          name: element1?.text,
         },
         "currentShape"
       );
-    } else
-      dispatch(
-        {
-          active: false,
-        },
-        "currentShape"
-      );
+      group.on("scaling", () => {
+        const scaleX = 1 / group.scaleX;
+        const scaleY = 1 / group.scaleY;
+        element1.set({ scaleX, scaleY });
+        element2.set({ scaleX, scaleY });
+        mainEditor?.canvas.renderAll();
+      });
+    }
+  };
+
+  const clearCurrentShape = (group) => {
+    dispatch(
+      {
+        active: false,
+      },
+      "currentShape"
+    );
+    group.off("scaling");
   };
 
   const [{ isOver }, dropRef] = useDrop(() => ({
@@ -48,42 +53,14 @@ const WorkSpace = ({ size, imgUrl, defaultData }) => {
       isOver: monitor.isOver(),
     }),
     drop: () => {
-      return { name: "floorBox", canvas: canvasRef.current, setCurrentShape };
+      return { name: "floorBox", canvas: canvasRef.current };
     },
   }));
-
-  const setData = (sheet) => {
-    mainEditor?.canvas.loadFromJSON(sheet);
-  };
-
-  const setBackgroundImg = async (url, canvas, callback) => {
-    const image = await new Promise((resolve, reject) => {
-      try {
-        fabric.Image.fromURL(url, resolve, {
-          crossOrigin: "Anonymous",
-        });
-      } catch {
-        reject;
-      }
-    });
-    image
-      .set({
-        opacity: 1,
-        evented: false,
-        selectable: false,
-        hasControls: false,
-      })
-      .scaleToWidth(size?.width);
-    canvas.setBackgroundColor("#fff");
-    canvas.add(image).centerObject(image);
-    callback && callback();
-    canvas.sendToBack(image);
-  };
 
   useEffect(() => {
     if (mainEditor?.canvas && size?.width && !loaded?.current) {
       loaded.current = true;
-
+      console.log("🚀 ~ useEffect ~ isControlled:", isControlled);
       mainEditor?.canvas?.setWidth(size?.width);
       mainEditor?.canvas?.setHeight(size?.height);
       fabric.Object.prototype.cornerStyle = "circle";
@@ -91,11 +68,17 @@ const WorkSpace = ({ size, imgUrl, defaultData }) => {
       controlsInfo.forEach(({ name, state }) => {
         fabric.Object.prototype.setControlVisible(name, state);
       });
-
-      setBackgroundImg(imgUrl, mainEditor.canvas, () => {
-        defaultData && setData(defaultData);
+      defaultData && mainEditor?.canvas.loadFromJSON(defaultData);
+      mainEditor.canvas.on("selection:created", ({ selected }) => {
+        setCurrentShape(selected?.[0]);
       });
-      mainEditor.canvas.upperCanvasEl.onclick = setCurrentShape;
+      mainEditor.canvas.on("selection:updated", ({ selected, deselected }) => {
+        clearCurrentShape(deselected?.[0]);
+        setCurrentShape(selected?.[0]);
+      });
+      mainEditor.canvas.on("selection:cleared", ({ deselected }) => {
+        clearCurrentShape(deselected?.[0]);
+      });
     }
   }, [mainEditor, size, defaultData]);
 
@@ -105,22 +88,30 @@ const WorkSpace = ({ size, imgUrl, defaultData }) => {
   }, [editor]);
 
   return (
-    <div className="flex flex-col gap-2">
-      <Controls />
-      <div className="" ref={dropRef} role="floorBox">
+    <div className="flex flex-col gap-2 relative">
+      <Controls isControlled={isControlled} />
+      <div className="relative" ref={dropRef} role="floorBox">
+        <div
+          style={{ size }}
+          className={`sample-canvas atheel absolute overflow-hidden rounded-xl border ${
+            isOver ? "opacity-60 border-2 border-dashed border-[red]" : ""
+          }`}
+        >
+          <img src={imgUrl} width={size?.width} height={size?.height} />
+        </div>
         <FabricJSCanvas
           onReady={(e) => {
-            console.log("🚀 ~ e:", e);
             dispatch({ mainEditor: editor });
             canvasRef.current = e?.upperCanvasEl;
             onReady(e);
           }}
           ref={canvasRef}
-          className={`sample-canvas atheel overflow-hidden rounded-xl border ${
-            isOver ? "opacity-60 border-2 border-dashed border-[red]" : ""
-          }`}
+          className={`sample-canvas atheel overflow-hidden`}
         />
       </div>
+      {isControlled ? null : (
+        <div className="absolute top-0 left-0 bottom-0 right-0 z-50" />
+      )}
     </div>
   );
 };

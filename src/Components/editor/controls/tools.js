@@ -3,6 +3,19 @@ export const setActive = (editor, element) => {
   editor.canvas.renderAll();
 };
 
+const createText = (text, elem, fill = "transparent") => {
+  return new fabric.Text(text, {
+    fill,
+    fontSize: 22,
+    left: elem.left + elem.width / 2,
+    top: elem.top + elem.height / 2,
+    originX: 'center',
+    originY: 'center',
+    scaleX: 1,
+    scaleY: 1
+  });
+}
+
 export const addCircle = (editor, { x, y }) => {
   const top = y - 100 / 2;
   const left = x - 100 / 2;
@@ -10,19 +23,14 @@ export const addCircle = (editor, { x, y }) => {
   const circleBox = new fabric.Circle({
     radius: 50,
     strokeWidth: 2,
-    fill: "#76C70F61",
-    stroke: "#76C70F",
+    fill: "#1EFC5CCC",
+    stroke: "#1EFC5C",
     top,
     left,
   });
-  const textBox = new fabric.Textbox("text", {
-    text,
-    fontSize: 20,
-    fill: "#fff",
-    top: top + 70,
-    left: left + 50,
-  });
-  var group = new fabric.Group([circleBox, textBox]);
+  const textId = createText(text, circleBox)
+  const textName = createText(text, circleBox, "#000")
+  const group = new fabric.Group([circleBox, textName, textId]);
   editor.canvas.add(group);
   setActive(editor, group);
 };
@@ -35,20 +43,14 @@ export const addRectangle = (editor, { x, y }) => {
     width: 100,
     height: 50,
     strokeWidth: 2,
-    fill: "#76C70F61",
-    stroke: "#76C70F",
+    fill: "#1EFC5CCC",
+    stroke: "#1EFC5C",
     top,
     left,
   });
-  const textBox = new fabric.Textbox("text", {
-    text,
-    fontSize: 20,
-    fill: "#fff",
-    width: 50,
-    top: top + 20,
-    left: left + 50,
-  });
-  var group = new fabric.Group([rectangleBox, textBox]);
+  const textId = createText(text, rectangleBox)
+  const textName = createText(text, rectangleBox, "#000")
+  const group = new fabric.Group([rectangleBox, textName, textId]);
   editor.canvas.add(group);
   setActive(editor, group);
 };
@@ -61,20 +63,14 @@ export const addRect = (editor, { x, y }) => {
     width: 100,
     height: 100,
     strokeWidth: 2,
-    fill: "#76C70F61",
-    stroke: "#76C70F",
+    fill: "#1EFC5CCC",
+    stroke: "#1EFC5C",
     top,
     left,
   });
-  const textBox = new fabric.Textbox("text", {
-    text,
-    fontSize: 20,
-    fill: "#fff",
-    width: 50,
-    top: top + 70,
-    left: left + 50,
-  });
-  var group = new fabric.Group([rectBox, textBox]);
+  const textId = createText(text, rectBox)
+  const textName = createText(text, rectBox, "#000")
+  const group = new fabric.Group([rectBox, textName, textId]);
   editor.canvas.add(group);
   setActive(editor, group);
 };

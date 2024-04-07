@@ -33,7 +33,7 @@ function App() {
       element: <Layout />,
       children: [
         { index: true, element: <Dashboard /> },
-        { path: "NewFloor", element: <NewFloor /> },
+        { path: "add-floor", element: <NewFloor /> },
         { path: "floor/:floorId", element: <PreviewFloor /> },
         { path: "AddFloor", element: <MyFloors /> },
       ],
@@ -44,13 +44,13 @@ function App() {
 
   return (
     <ProviderNoval>
-      <QueryClientProvider client={queryClient}>
-        <NextUIProvider>
-          <DndProvider backend={HTML5Backend}>
+      <NextUIProvider>
+        <DndProvider backend={HTML5Backend}>
+          <QueryClientProvider client={queryClient}>
             <RouterProvider router={routers} />
-          </DndProvider>
-        </NextUIProvider>
-      </QueryClientProvider>
+          </QueryClientProvider>
+        </DndProvider>
+      </NextUIProvider>
     </ProviderNoval>
   );
 }

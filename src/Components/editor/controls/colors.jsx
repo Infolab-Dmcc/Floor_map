@@ -4,15 +4,15 @@ import { useDispatch, useSelector } from "noval";
 
 const colors = [
   {
-    key: "#76C70F",
+    key: "#1EFC5CCC",
     label: "Available",
   },
   {
-    key: "#FC611E",
+    key: "#FC611ECC",
     label: "Pawned",
   },
   {
-    key: "#1967d2",
+    key: "#0F81C733",
     label: "Unknown",
   },
 ];
@@ -20,6 +20,7 @@ const colors = [
 export function Colors() {
   const { dispatch } = useDispatch();
   const { color } = useSelector("currentShape");
+  console.log("🚀 ~ Colors ~ color: up", color)
 
   return (
     <Select
@@ -31,9 +32,10 @@ export function Colors() {
       onChange={(e) => {
         const color = e.target?.value;
         if (color) {
+          console.log("🚀 ~ Colors ~ color:", color, color.substring(0, 7));
           dispatch("updateCurrentShape", {
-            fill: `${color}61`,
-            stroke: color,
+            fill: color,
+            stroke: `${color.substring(0, 7)}`,
           });
         }
       }}

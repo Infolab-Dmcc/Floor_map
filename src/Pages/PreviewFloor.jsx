@@ -5,38 +5,43 @@ import { useDispatch, useSelector } from "noval";
 import { useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { http } from "../network/http";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
-const rooms = [
-  { label: "room 1", value: "1" },
-  { label: "room 2", value: "2" },
-  { label: "room 3", value: "3" },
-];
+const getMeta = (url, cb) => {
+  const img = new Image();
+  img.onload = () => cb(null, img);
+  img.onerror = (err) => cb(err);
+  img.src = url;
+};
+const roomsByValue = {};
+
+const getRooms = (rooms) =>
+  rooms?.map(({ id, name }) => {
+    roomsByValue[id] = name;
+    return { label: name, value: id };
+  });
 
 const apiFloor = [
-  { room: "1", type: "#1967d2" },
-  { room: "2", type: "#FC611E" },
+  // { room: "1", type: "#1967d2" },
+  // { room: "2", type: "#FC611E" },
 ];
 
 const initDataToPreview = (defaultData) => {
   if (!defaultData) return {};
   const parseData = JSON.parse(defaultData);
   const objects = parseData.objects;
-  objects.map(({ objects }) => {
-    const shape = objects?.[0];
-    const info = objects?.[1];
+  objects.forEach((group) => {
+    const shape = group?.objects?.[0];
+    const id = group?.objects?.[2];
     for (let i = 0; i < apiFloor.length; i++) {
       const data = apiFloor[i];
-      console.log("🚀 ~ objects.map ~ data:", data, info?.text, data?.room);
-      if (info?.text == data?.room) {
+      if (id?.text == data?.room) {
         shape.fill = `${data?.type}61`;
         shape.stroke = data?.type;
-        console.log("🚀 ~ objects.map ~ shape:", shape);
         break;
       }
       continue;
     }
-    return objects;
   });
   return parseData;
 };
@@ -44,34 +49,38 @@ const initDataToPreview = (defaultData) => {
 const PreviewFloor = () => {
   const { floorId } = useParams();
   const { dispatch } = useDispatch();
+  const [floorMapData, setFloorMap] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [mainEditor, { active, value = rooms[0].value }] = useSelector([
+  const [size, setSize] = useState({ width: 0, height: 0 });
+  const [mainEditor, { active, value }] = useSelector([
     "mainEditor",
     "currentShape",
   ]);
 
   const floorMapQuery = useQuery({
-    queryKey: ["floorMapQuery"],
+    queryKey: ["floorMapQuery", floorId],
     queryFn: async () => {
       const res = await http.get(`/get_floor?floor_id=${floorId}`);
+      getMeta(`http://highnox.site${res?.data?.data?.floor_map}`, (_, img) => {
+        setSize({ width: img?.naturalWidth, height: img?.naturalHeight });
+      });
+      const resFloorMap = await http.get(`/get_floor_map?floor_id=${floorId}`);
+      setFloorMap(initDataToPreview(resFloorMap?.data["Floor OBJ"]));
+      console.log("🚀 ~ queryFn: ~ resFloorMap:", resFloorMap);
       return res.data;
     },
     onSuccess: (e) => {
       console.log("🚀 ~ onSuccess ~ e:", e);
-      initDataToPreview();
     },
     onError: (e) => {
       console.log("🚀 ~ onError ~ e:", e);
-      initDataToPreview();
     },
   });
 
-  const floorMap = floorMapQuery.data;
+  const floorMap = floorMapQuery.data?.data;
 
   const saveData = async () => {
     const json = mainEditor?.canvas?.toObject();
-    json?.objects?.shift();
-    console.log("🚀 ~ saveData ~ json:", json);
 
     setIsLoading(true);
     try {
@@ -84,10 +93,6 @@ const PreviewFloor = () => {
     setIsLoading(false);
   };
 
-  useEffect(() => {
-    initDataToPreview();
-  }, []);
-
   return (
     <div className="pb-4">
       <div className="flex">
@@ -95,11 +100,17 @@ const PreviewFloor = () => {
           id="Editor"
           className="bg-white  w-4/5 m-2 rounded-xl flex justify-center items-center shadow-sm border-2 p-3"
         >
-          <WorkSpace
-            imgUrl={floorMap?.img ?? "/test.png"}
-            defaultData={initDataToPreview()}
-            size={{ width: 866, height: 1048 }}
-          />
+          {floorMapQuery?.isLoading ? null : (
+            <WorkSpace
+              size={size}
+              defaultData={floorMapData}
+              imgUrl={
+                floorMap?.floor_map
+                  ? `http://highnox.site${floorMap?.floor_map}`
+                  : "/test.png"
+              }
+            />
+          )}
         </div>
         <div
           id="SideMenu"
@@ -121,22 +132,26 @@ const PreviewFloor = () => {
                 label="Floor Number"
                 placeholder="Floor Number"
                 className="max-w-xs mb-3"
-                value={"floor 1"}
+                value={floorMap?.id}
                 isDisabled={true}
               />
               <Select
-                items={rooms}
+                items={getRooms(floorMap?.rooms || [])}
                 label="Select room"
                 placeholder="Choose room"
                 className="max-w-xs mb-5"
                 selectedKeys={[value]}
                 onChange={(e) => {
-                  dispatch("updateByRoom", { room: e.target?.value });
+                  console.log("🚀 ~ PreviewFloor ~ e:", e);
+                  dispatch("updateByRoom", {
+                    roomName: roomsByValue?.[e.target?.value],
+                    roomId: e.target?.value,
+                  });
                 }}
                 isDisabled={!active}
               >
                 {({ label, value }) => (
-                  <SelectItem key={value} value={value}>
+                  <SelectItem key={value} value={value} name={label}>
                     {label}
                   </SelectItem>
                 )}

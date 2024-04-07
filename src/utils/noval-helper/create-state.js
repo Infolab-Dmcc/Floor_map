@@ -3,7 +3,7 @@ const createState = {
     currentShape: {
         active: false,
         value: false,
-        color: "#76C70F"
+        color: "#1EFC5CCC"
     }
 }
 

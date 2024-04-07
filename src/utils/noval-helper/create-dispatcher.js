@@ -4,7 +4,6 @@ const createDispatch = (data, tools, actions) => {
     const editorCanvas = state?.mainEditor?.canvas
 
     const updateCurrentShape = () => {
-        console.log("🚀 ~ updateCurrentShape ~ opt:", payload)
         let element = editorCanvas?.getActiveObject();
         if (!element) return;
         if (Array.isArray(element?._objects)) {
@@ -13,22 +12,28 @@ const createDispatch = (data, tools, actions) => {
         element.set(payload);
         element.setCoords();
         editorCanvas.renderAll();
-        update({ color: payload?.stroke }, "currentShape")
+        update({ color: payload?.fill }, "currentShape")
     };
 
     const updateByRoom = () => {
-        const text = payload?.room || '1'
-        console.log("🚀 ~ updateByRoom ~ text:", text)
+        const roomId = payload?.roomId || '1'
+        const roomName = payload?.roomName || '1'
         let element = editorCanvas?.getActiveObject();
         if (!element) return;
         if (Array.isArray(element?._objects)) {
-            element = element?._objects?.[1];
+            const element1 = element?._objects?.[1];
+            const element2 = element?._objects?.[2];
+            element1.set({ text: roomName });
+            element1.setCoords();
+            element2.set({ text: roomId });
+            element2.setCoords();
+            editorCanvas.renderAll();
+        } else {
+            element.set({ text: roomName });
+            element.setCoords();
+            editorCanvas.renderAll();
         }
-        element.set({ text });
-        element.setCoords();
-        editorCanvas.renderAll();
-        update({ value: text }, "currentShape")
-        // update({ mainEditor: state?.mainEditor })
+        update({ value: roomId, name: roomName }, "currentShape")
     }
 
     const deleteAll = () => {
@@ -39,7 +44,6 @@ const createDispatch = (data, tools, actions) => {
                 editorCanvas?.remove(object);
             });
             editorCanvas.renderAll();
-            // update({ mainEditor: state?.mainEditor })
         }
     };
 
