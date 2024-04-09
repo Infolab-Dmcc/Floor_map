@@ -12,8 +12,12 @@ const getMeta = (url, cb) => {
   img.onload = () => cb(null, img);
   img.onerror = (err) => cb(err);
   img.src = url;
+  img.style = "max-width: 700px;";
+  console.log("🚀 ~ getMeta ~ img:", img);
 };
+
 const roomsByValue = {};
+const maxWidth = 850;
 
 const getRooms = (rooms) =>
   rooms?.map(({ id, name }) => {
@@ -30,14 +34,15 @@ const initDataToPreview = (defaultData) => {
   if (!defaultData) return {};
   const parseData = JSON.parse(defaultData);
   const objects = parseData.objects;
+
   objects.forEach((group) => {
     const shape = group?.objects?.[0];
     const id = group?.objects?.[2];
     for (let i = 0; i < apiFloor.length; i++) {
       const data = apiFloor[i];
       if (id?.text == data?.room) {
-        shape.fill = `${data?.type}61`;
-        shape.stroke = data?.type;
+        shape.fill = data?.type;
+        shape.stroke = data?.type?.substring(0, 7);
         break;
       }
       continue;
@@ -62,11 +67,12 @@ const PreviewFloor = () => {
     queryFn: async () => {
       const res = await http.get(`/get_floor?floor_id=${floorId}`);
       getMeta(`http://highnox.site${res?.data?.data?.floor_map}`, (_, img) => {
-        setSize({ width: img?.naturalWidth, height: img?.naturalHeight });
+        const width =
+          img?.naturalWidth >= maxWidth ? maxWidth : img?.naturalWidth;
+        setSize({ width, height: img?.naturalHeight });
       });
       const resFloorMap = await http.get(`/get_floor_map?floor_id=${floorId}`);
       setFloorMap(initDataToPreview(resFloorMap?.data["Floor OBJ"]));
-      console.log("🚀 ~ queryFn: ~ resFloorMap:", resFloorMap);
       return res.data;
     },
     onSuccess: (e) => {
@@ -104,6 +110,7 @@ const PreviewFloor = () => {
             <WorkSpace
               size={size}
               defaultData={floorMapData}
+              isControlled={true}
               imgUrl={
                 floorMap?.floor_map
                   ? `http://highnox.site${floorMap?.floor_map}`
@@ -142,7 +149,6 @@ const PreviewFloor = () => {
                 className="max-w-xs mb-5"
                 selectedKeys={[value]}
                 onChange={(e) => {
-                  console.log("🚀 ~ PreviewFloor ~ e:", e);
                   dispatch("updateByRoom", {
                     roomName: roomsByValue?.[e.target?.value],
                     roomId: e.target?.value,
@@ -151,7 +157,7 @@ const PreviewFloor = () => {
                 isDisabled={!active}
               >
                 {({ label, value }) => (
-                  <SelectItem key={value} value={value} name={label}>
+                  <SelectItem key={value} value={value}>
                     {label}
                   </SelectItem>
                 )}
@@ -169,10 +175,7 @@ const PreviewFloor = () => {
           </div>
         </div>
       </div>
-      <div
-        id="Editor"
-        className="bg-white  m-2 rounded-xl flex justify-center items-center shadow-sm "
-      >
+      <div className="bg-white  m-2 rounded-xl flex justify-center items-center shadow-sm ">
         <DetailsTable />
       </div>
     </div>

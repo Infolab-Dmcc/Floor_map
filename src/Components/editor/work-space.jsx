@@ -6,7 +6,7 @@ import { useDispatch, useSelector } from "noval";
 import { controlsInfo } from "./controls/helper";
 import { FabricJSCanvas, useFabricJSEditor } from "fabricjs-react";
 
-const WorkSpace = ({ size, imgUrl, defaultData, isControlled = true }) => {
+const WorkSpace = ({ size, imgUrl, defaultData, isControlled }) => {
   const loaded = useRef(null);
   const canvasRef = useRef(null);
   const { dispatch, reset } = useDispatch();
@@ -60,7 +60,6 @@ const WorkSpace = ({ size, imgUrl, defaultData, isControlled = true }) => {
   useEffect(() => {
     if (mainEditor?.canvas && size?.width && !loaded?.current) {
       loaded.current = true;
-      console.log("🚀 ~ useEffect ~ isControlled:", isControlled);
       mainEditor?.canvas?.setWidth(size?.width);
       mainEditor?.canvas?.setHeight(size?.height);
       fabric.Object.prototype.cornerStyle = "circle";
@@ -68,7 +67,7 @@ const WorkSpace = ({ size, imgUrl, defaultData, isControlled = true }) => {
       controlsInfo.forEach(({ name, state }) => {
         fabric.Object.prototype.setControlVisible(name, state);
       });
-      defaultData && mainEditor?.canvas.loadFromJSON(defaultData);
+
       mainEditor.canvas.on("selection:created", ({ selected }) => {
         setCurrentShape(selected?.[0]);
       });
@@ -80,7 +79,23 @@ const WorkSpace = ({ size, imgUrl, defaultData, isControlled = true }) => {
         clearCurrentShape(deselected?.[0]);
       });
     }
-  }, [mainEditor, size, defaultData]);
+  }, [mainEditor, size]);
+
+  useEffect(() => {
+    if (mainEditor?.canvas && defaultData) {
+      mainEditor?.canvas.loadFromJSON(defaultData, () => {
+        if (!isControlled) {
+          mainEditor.canvas.forEachObject(function (group) {
+            group.lockMovementX = true;
+            group.lockMovementY = true;
+            group.lockScalingX = true;
+            group.lockScalingY = true;
+          });
+          mainEditor.canvas.renderAll();
+        }
+      });
+    }
+  }, [mainEditor, isControlled, defaultData]);
 
   useEffect(() => {
     dispatch({ mainEditor: editor });
@@ -89,7 +104,7 @@ const WorkSpace = ({ size, imgUrl, defaultData, isControlled = true }) => {
 
   return (
     <div className="flex flex-col gap-2 relative">
-      <Controls isControlled={isControlled} />
+      {isControlled ? <Controls /> : null}
       <div className="relative" ref={dropRef} role="floorBox">
         <div
           style={{ size }}
@@ -97,7 +112,12 @@ const WorkSpace = ({ size, imgUrl, defaultData, isControlled = true }) => {
             isOver ? "opacity-60 border-2 border-dashed border-[red]" : ""
           }`}
         >
-          <img src={imgUrl} width={size?.width} height={size?.height} />
+          <img
+            src={imgUrl}
+            width={size?.width}
+            height={size?.height}
+            // style={{ maxWidth: "700px" }}
+          />
         </div>
         <FabricJSCanvas
           onReady={(e) => {
@@ -109,9 +129,6 @@ const WorkSpace = ({ size, imgUrl, defaultData, isControlled = true }) => {
           className={`sample-canvas atheel overflow-hidden`}
         />
       </div>
-      {isControlled ? null : (
-        <div className="absolute top-0 left-0 bottom-0 right-0 z-50" />
-      )}
     </div>
   );
 };

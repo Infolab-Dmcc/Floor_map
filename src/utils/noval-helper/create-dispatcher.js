@@ -5,21 +5,21 @@ const createDispatch = (data, tools, actions) => {
 
     const updateCurrentShape = () => {
         let element = editorCanvas?.getActiveObject();
-        if (!element) return;
+        if (!element || element?.lockMovementX) return;
         if (Array.isArray(element?._objects)) {
             element = element?._objects?.[0];
+            element.set(payload);
+            element.setCoords();
+            editorCanvas.renderAll();
         }
-        element.set(payload);
-        element.setCoords();
-        editorCanvas.renderAll();
         update({ color: payload?.fill }, "currentShape")
     };
 
     const updateByRoom = () => {
         const roomId = payload?.roomId || '1'
         const roomName = payload?.roomName || '1'
-        let element = editorCanvas?.getActiveObject();
-        if (!element) return;
+        const element = editorCanvas?.getActiveObject();
+        if (!element || element?.lockMovementX) return;
         if (Array.isArray(element?._objects)) {
             const element1 = element?._objects?.[1];
             const element2 = element?._objects?.[2];

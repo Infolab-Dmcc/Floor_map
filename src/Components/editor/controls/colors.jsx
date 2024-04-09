@@ -20,7 +20,6 @@ const colors = [
 export function Colors() {
   const { dispatch } = useDispatch();
   const { color } = useSelector("currentShape");
-  console.log("🚀 ~ Colors ~ color: up", color)
 
   return (
     <Select
@@ -32,10 +31,9 @@ export function Colors() {
       onChange={(e) => {
         const color = e.target?.value;
         if (color) {
-          console.log("🚀 ~ Colors ~ color:", color, color.substring(0, 7));
           dispatch("updateCurrentShape", {
             fill: color,
-            stroke: `${color.substring(0, 7)}`,
+            stroke: color.substring(0, 7),
           });
         }
       }}

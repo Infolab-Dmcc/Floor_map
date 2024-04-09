@@ -5,7 +5,7 @@ import { addCircle, addRect, addRectangle } from "./tools";
 import { Colors } from "./colors";
 import { useSelector } from "noval";
 
-const Controls = ({ isControlled }) => {
+const Controls = () => {
   const editor = useSelector("mainEditor");
 
   const deleteActive = () => {
@@ -13,12 +13,7 @@ const Controls = ({ isControlled }) => {
   };
 
   return (
-    <div
-      style={{
-        opacity: isControlled ? "1" : "0.25",
-      }}
-      className="flex justify-between gap-5 z-50 rounded-xl"
-    >
+    <div className="flex justify-between gap-5 z-50 rounded-xl">
       <div
         style={{ height: "fit-content" }}
         className="flex gap-5 text-black rounded-xl p-2 border w-full"
