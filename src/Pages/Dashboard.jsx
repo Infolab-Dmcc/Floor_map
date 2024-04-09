@@ -1,149 +1,153 @@
-/* eslint-disable no-unused-vars */
-import { Button, Progress } from "@nextui-org/react";
-import { Select, SelectItem } from "@nextui-org/react";
-import { useFormik } from "formik";
-import { useEffect, useState } from "react";
-import * as Yup from "yup";
-import { ClockLoader } from "react-spinners";
-import { http } from "../network/http";
-import { useNavigate } from "react-router";
+  /* eslint-disable no-unused-vars */
+  import { Button, Progress } from "@nextui-org/react";
+  import { Select, SelectItem } from "@nextui-org/react";
+  import { useFormik } from "formik";
+  import { useEffect, useState } from "react";
+  import * as Yup from "yup";
+  import { ClockLoader } from "react-spinners";
+  // import { http } from "../network/http";
+  import { useNavigate } from "react-router";
+  import axios from 'axios';
 
-const Dashboard = () => {
-  const navigate = useNavigate();
-  const [buildings, setBuildings] = useState([]);
-  const [cities, SetCities] = useState([]);
-  const [floors, setFloors] = useState([]);
-  const [isLoading, setIsLoading] = useState(false);
+  const Dashboard = () => {
+    const navigate = useNavigate();
+    const [buildings, setBuildings] = useState([]);
+    const [cities, SetCities] = useState([]);
+    const [floors, setFloors] = useState([]);
+    const [isLoading, setIsLoading] = useState(false);
 
-  async function getFloors(state_id = "", building_id = "") {
-    setIsLoading(true);
-    let data = await http
-      .get(`/get_floor_info?state_id=${state_id}&building_id=${building_id}`)
-      .catch((error) => {
+    async function getFloors(state_id = "", building_id = "") {
+      setIsLoading(true);
+      try {
+        let response = await axios.get(`http://highnox.site/highnox/get_floor_info?state_id=${state_id}&building_id=${building_id}`);
+        if (response.status === 200) {
+          setFloors(response.data.floor_info);
+        }
+      } catch (error) {
         console.log("My error 321", error);
+      } finally {
         setIsLoading(false);
-      });
-    if (data?.status === 200) {
-      setFloors(data.data.floor_info);
-      setIsLoading(false);
+      }
     }
-  }
 
-  async function getCities() {
-    let data = await http.get("/cities").catch((error) => {
-      console.log("My error", error);
-    });
-    if (data?.status === 200) {
-      SetCities(data.data.data);
+    async function getCities() {
+      try {
+        let response = await axios.get("http://highnox.site/highnox/cities");
+        if (response.status === 200) {
+          SetCities(response.data.data);
+        }
+      } catch (error) {
+        console.log("My error", error);
+      }
     }
-  }
 
-  async function getBuildings(city_id = "") {
-    let data = await http
-      .get(`/buildings?city_id=${city_id}`)
-      .catch((error) => {
+    async function getBuildings(city_id = "") {
+      try {
+        let response = await axios.get(`http://highnox.site/highnox/buildings?city_id=${city_id}`);
+        if (response.status === 200) {
+          setBuildings(response.data.data);
+        }
+      } catch (error) {
         console.log("My error building", error);
-      });
-    if (data?.status === 200) {
-      setBuildings(data.data.data);
+      }
     }
-  }
 
-  const formHandler = useFormik({
-    initialValues: {
-      building: "",
-      city: "",
-    },
-    validationSchema: Yup.object({
-      building: Yup.string(),
-      city: Yup.string(),
-    }),
-    onSubmit: (values, { resetForm }) => {
-      getFloors(values.city, values.building);
-      resetForm();
-      console.log(values);
-    },
-  });
 
-  useEffect(() => {
-    getFloors();
-    getCities();
-  }, []);
+    const formHandler = useFormik({
+      initialValues: {
+        building: "",
+        city: "",
+      },
+      validationSchema: Yup.object({
+        building: Yup.string(),
+        city: Yup.string(),
+      }),
+      onSubmit: (values, { resetForm }) => {
+        getFloors(values.city, values.building);
+        resetForm();
+        console.log(values);
+      },
+    });
 
-  useEffect(() => {
-    getBuildings(formHandler.values.city);
-  }, [formHandler.values.city]);
+    useEffect(() => {
+      getFloors();
+      getCities();
+    }, []);
 
-  return (
-    <>
-      <div
-        id="Editor"
-        className="bg-white   m-2 mx-7 rounded-xl flex justify-center items-center shadow-sm border-2 "
-      >
-        <form
-          onSubmit={formHandler.handleSubmit}
-          className=" flex gap-5 items-center py-3"
+    useEffect(() => {
+      getBuildings(formHandler.values.city);
+    }, [formHandler.values.city]);
+
+    return (
+      <>
+        <div
+          id="Editor"
+          className="bg-white   m-2 mx-7 rounded-xl flex justify-center items-center shadow-sm border-2 "
         >
-          <Select
-            name="city"
-            placeholder="Select City"
-            className="w-44"
-            onChange={formHandler.handleChange}
-            onBlur={formHandler.handleBlur}
-            value={formHandler.values.city}
+          <form
+            onSubmit={formHandler.handleSubmit}
+            className=" flex gap-5 items-center py-3"
           >
-            {cities?.map(({ id, name }) => (
-              <SelectItem key={id} value={name}>
-                {name}
-              </SelectItem>
-            ))}
-          </Select>
-          <Select
-            isDisabled={!buildings.length || !formHandler.values.city}
-            name="building"
-            placeholder="Select Building"
-            className="w-40"
-            onChange={formHandler.handleChange}
-            onBlur={formHandler.handleBlur}
-            value={formHandler.values.building}
-          >
-            {buildings.map(({ id, name }) => (
-              <SelectItem key={id} value={id}>
-                {name}
-              </SelectItem>
-            ))}
-          </Select>
-          <Button
-            className="bg-[#0F81C7] text-white font-semibold"
-            variant="solid"
-            type="submit"
-          >
-            Search
-          </Button>
-          <Button
-            color="danger"
-            variant="ghost"
-            onClick={() => {
-              getFloors(); // Call getFloors after form reset
-            }}
-          >
-            Reset
-          </Button>
-        </form>
-      </div>
-      <div className="p-5 m-auto relative grid sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3  gap-y-5 gap-x-0 ms-9">
-        {isLoading ? (
-          <div className="  h-96 w-80 absolute right-[640px] flex justify-center items-center  ">
-            {" "}
-            <ClockLoader size={100} color="#0F81C7" />
-          </div>
-        ) : (
-          floors?.map(
-            ({
-              id,
-              name,
-              total_available_rooms,
-              total_rooms,
+            <Select
+              name="city"
+              placeholder="Select City"
+              className="w-44"
+              onChange={formHandler.handleChange}
+              onBlur={formHandler.handleBlur}
+              value={formHandler.values.city}
+            >
+              {cities?.map(({ id, name }) => (
+                <SelectItem key={id} value={name}>
+                  {name}
+                </SelectItem>
+              ))}
+            </Select>
+            <Select
+              isDisabled={!buildings?.length || !formHandler.values.city}
+              name="building"
+              placeholder="Select Building"
+              className="w-40"
+              onChange={formHandler.handleChange}
+              onBlur={formHandler.handleBlur}
+              value={formHandler.values.building}
+            >
+              {buildings?.map(({ id, name }) => (
+                <SelectItem key={id} value={id}>
+                  {name}
+                </SelectItem>
+              ))}
+            </Select>
+            <Button
+              className="bg-[#0F81C7] text-white font-semibold"
+              variant="solid"
+              type="submit"
+            >
+              Search
+            </Button>
+            <Button
+              color="danger"
+              variant="ghost"
+              onClick={() => {
+                getFloors(); // Call getFloors after form reset
+              }}
+            >
+              Reset
+            </Button>
+          </form>
+        </div>
+        <div className="p-5 m-auto relative grid sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3  gap-y-5 gap-x-0 ms-9">
+          {isLoading ? (
+            <div className="  h-96 w-80 absolute right-[640px] flex justify-center items-center  ">
+              {" "}
+              <ClockLoader size={100} color="#0F81C7" />
+            </div>
+          ) : (
+            floors?.map(
+              ({
+                id,
+                name,
+                total_available_rooms,
+                total_rooms,
               floor_map,
               city,
               building,
