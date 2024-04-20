@@ -6,18 +6,9 @@ import { useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { http } from "../network/http";
 import { useState } from "react";
-
-const getMeta = (url, cb) => {
-  const img = new Image();
-  img.onload = () => cb(null, img);
-  img.onerror = (err) => cb(err);
-  img.src = url;
-  img.style = "max-width: 700px;";
-  console.log("🚀 ~ getMeta ~ img:", img);
-};
+import { getMetaImg, maxWidth } from "../Components/editor/shared";
 
 const roomsByValue = {};
-const maxWidth = 850;
 
 const getRooms = (rooms) =>
   rooms?.map(({ id, name }) => {
@@ -25,30 +16,9 @@ const getRooms = (rooms) =>
     return { label: name, value: id };
   });
 
-const apiFloor = [
-  // { room: "1", type: "#1967d2" },
-  // { room: "2", type: "#FC611E" },
-];
-
-const initDataToPreview = (defaultData) => {
+const initData = (defaultData) => {
   if (!defaultData) return {};
-  const parseData = JSON.parse(defaultData);
-  const objects = parseData.objects;
-
-  objects.forEach((group) => {
-    const shape = group?.objects?.[0];
-    const id = group?.objects?.[2];
-    for (let i = 0; i < apiFloor.length; i++) {
-      const data = apiFloor[i];
-      if (id?.text == data?.room) {
-        shape.fill = data?.type;
-        shape.stroke = data?.type?.substring(0, 7);
-        break;
-      }
-      continue;
-    }
-  });
-  return parseData;
+  return JSON.parse(defaultData);
 };
 
 const PreviewFloor = () => {
@@ -66,13 +36,13 @@ const PreviewFloor = () => {
     queryKey: ["floorMapQuery", floorId],
     queryFn: async () => {
       const res = await http.get(`/get_floor?floor_id=${floorId}`);
-      getMeta(`http://highnox.site${res?.data?.data?.floor_map}`, (_, img) => {
+      getMetaImg(`https://highnox.site${res?.data?.data?.floor_map}`, (_, img) => {
         const width =
           img?.naturalWidth >= maxWidth ? maxWidth : img?.naturalWidth;
         setSize({ width, height: img?.naturalHeight });
       });
       const resFloorMap = await http.get(`/get_floor_map?floor_id=${floorId}`);
-      setFloorMap(initDataToPreview(resFloorMap?.data["Floor OBJ"]));
+      setFloorMap(initData(resFloorMap?.data["Floor OBJ"]));
       return res.data;
     },
     onSuccess: (e) => {
@@ -84,6 +54,7 @@ const PreviewFloor = () => {
   });
 
   const floorMap = floorMapQuery.data?.data;
+  // console.log("🚀 ~ PreviewFloor ~ floorMap:", floorMap)
 
   const saveData = async () => {
     const json = mainEditor?.canvas?.toObject();
@@ -113,7 +84,7 @@ const PreviewFloor = () => {
               isControlled={true}
               imgUrl={
                 floorMap?.floor_map
-                  ? `http://highnox.site${floorMap?.floor_map}`
+                  ? `https://highnox.site${floorMap?.floor_map}`
                   : "/test.png"
               }
             />
