@@ -60,6 +60,7 @@ const ViewRoomsPage = () => {
     },
     onSuccess: (e) => {},
     onError: (e) => {},
+    refetchOnWindowFocus: true,
   });
 
   const floorMap = floorMapQuery.data?.data;
