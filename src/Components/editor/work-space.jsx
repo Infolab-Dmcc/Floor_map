@@ -44,7 +44,9 @@ const WorkSpace = ({ size, imgUrl, defaultData, isControlled }) => {
       },
       "currentShape"
     );
-    group.off("scaling");
+    if (group) {
+      group.off("scaling");
+    }
   };
 
   const [{ isOver }, dropRef] = useDrop(() => ({

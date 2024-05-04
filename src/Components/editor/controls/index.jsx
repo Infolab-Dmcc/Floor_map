@@ -1,7 +1,15 @@
 import React from "react";
 import { Shape } from "./shape";
 import { MdDeleteForever } from "react-icons/md";
-import { addCircle, addRect, addRectangle } from "./tools";
+import {
+  addCircle,
+  addMulti_L_B,
+  addMulti_L_T,
+  addMulti_R_B,
+  addMulti_R_T,
+  addRect,
+  addRectangle,
+} from "./tools";
 import { Colors } from "./colors";
 import { useSelector } from "noval";
 
@@ -19,13 +27,25 @@ const Controls = () => {
         className="flex gap-5 text-black rounded-xl p-2 border w-full"
       >
         <Shape type="rect" onAddShape={(e) => addRect(editor, e)}>
-          <img width={50} src="/rect.png" alt="rect" />
+          <img width={50} src="/ships/rect.png" alt="rect" />
         </Shape>
         <Shape type="circle" onAddShape={(e) => addCircle(editor, e)}>
-          <img width={50} src="/circle.png" alt="circle" />
+          <img width={50} src="/ships/circle.png" alt="circle" />
         </Shape>
-        <Shape type="triangle" onAddShape={(e) => addRectangle(editor, e)}>
-          <img width={50} src="/rectangle.png" alt="rectangle" />
+        <Shape type="rect" onAddShape={(e) => addRectangle(editor, e)}>
+          <img width={50} src="/ships/rectangle.png" alt="rectangle" />
+        </Shape>
+        <Shape type="rect" onAddShape={(e) => addMulti_L_B(editor, e)}>
+          <img width={50} src="/ships/rect_l_b.png" alt="rectangle" />
+        </Shape>
+        <Shape type="rect" onAddShape={(e) => addMulti_R_B(editor, e)}>
+          <img width={50} src="/ships/rect_r_b.png" alt="rectangle" />
+        </Shape>
+        <Shape type="rect" onAddShape={(e) => addMulti_L_T(editor, e)}>
+          <img width={50} src="/ships/rect_l_t.png" alt="rectangle" />
+        </Shape>
+        <Shape type="rect" onAddShape={(e) => addMulti_R_T(editor, e)}>
+          <img width={50} src="/ships/rect_r_t.png" alt="rectangle" />
         </Shape>
       </div>
 
