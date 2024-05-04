@@ -1,7 +1,6 @@
 import { useFormik } from "formik";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import * as Yup from "yup";
-import DetailsTable from "../Components/DetailsTable";
 import { useNavigate } from "react-router";
 import { IoMdCloudUpload } from "react-icons/io";
 import { DeleteButton } from "../Components/DeleteButton";

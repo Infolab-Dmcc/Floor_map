@@ -37,7 +37,7 @@ function App() {
         { path: "add-floor", element: <NewFloor /> },
         { path: "floor/:floorId", element: <PreviewFloor /> },
         { path: "AddFloor", element: <MyFloors /> },
-        { path: "floor/:floorId/view", element: <ViewRoomsPage /> },
+        // { path: "floor/:floorId/view", element: <ViewRoomsPage /> },
       ],
     },
     { path: "unauthorized", element: <UnAuthorized /> },

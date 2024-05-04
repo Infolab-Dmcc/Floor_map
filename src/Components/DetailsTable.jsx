@@ -4,7 +4,7 @@ import { Table, TableHeader, TableColumn, TableBody, TableRow, TableCell } from 
 
 export default function DetailsTable({ data }) {
 
-    console.log("Hi", data);
+console.log("Hi",data);
     return (
         <Table
             aria-label="Example table with client side pagination"

@@ -1,12 +1,12 @@
-/* eslint-disable no-unused-vars */
 import { Button, Input, Select, SelectItem } from "@nextui-org/react";
-import DetailsTable from "../Components/DetailsTable";
+// import DetailsTable from "../Components/DetailsTable";
 import WorkSpace from "../Components/editor/work-space";
 import { useDispatch, useSelector } from "noval";
 import { useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { http } from "../network/http";
 import { useEffect, useState } from "react";
+import DetailsTable from "../Components/DetailsTable";
 
 const getMeta = (url, cb) => {
   const img = new Image();
@@ -68,16 +68,18 @@ const PreviewFloor = () => {
 
 
   async function getFloorInfo(floor_id = "") {
-    let data = await http
-      .get(`/get_floor?floor_id=${floor_id}`)
-      .catch((error) => {
-        console.log("My error building", error);
-      });
-    if (data?.status === 200) {
-      setFloorInfo(data.data.data);
-      console.log(data.data.data);
+    console.log("a7aaaaa test");
+    try {
+      let data = await http.get(`/get_floor?floor_id=${floor_id}`);
+      if (data?.status === 200) {
+        setFloorInfo(data.data.data);
+        console.log("Please check here:", data.data.data);
+      }
+    } catch (error) {
+      console.log("Error fetching floor info:", error);
     }
   }
+
 
   const floorMapQuery = useQuery({
     queryKey: ["floorMapQuery", floorId],
@@ -117,8 +119,13 @@ const PreviewFloor = () => {
   };
 
   useEffect(() => {
-    getFloorInfo(floorId);
-  }, [floorId])
+    console.log("test here ?????? ")
+    const fetchFloorInfo = async () => {
+      await getFloorInfo(floorId);
+    };
+    fetchFloorInfo();
+  }, [floorId]);
+
 
   return (
     <div className="pb-4">

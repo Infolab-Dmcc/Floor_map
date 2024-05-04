@@ -2,7 +2,6 @@ import { Button, Select, SelectItem } from "@nextui-org/react"
 import { useFormik } from "formik";
 import { useState } from 'react';
 import * as Yup from 'yup';
-import DetailsTable from "../Components/DetailsTable";
 
 
 const MyFloors = () => {
@@ -111,9 +110,7 @@ const MyFloors = () => {
                             My Editor Here.
                         </h1>
                     </div>
-                    <div id="Editor" className="bg-white  m-2 rounded-xl flex justify-center items-center shadow-sm " >
-                        <DetailsTable />
-                    </div>
+                    
                 </div>
                 <div id="SideMenu" className="bg-white w-1/5 m-2 rounded-xl shadow-sm border-2">
                     <form onSubmit={formHandler.handleSubmit} className="p-5 flex flex-col " >

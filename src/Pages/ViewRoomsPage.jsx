@@ -186,9 +186,7 @@ const ViewRoomsPage = () => {
           </div>
           <DetailsRoom floorId={floorId} />
         </div>
-        <div className="bg-white  m-2 rounded-xl flex justify-center items-center shadow-sm ">
-          <DetailsTable />
-        </div>
+        
       </div>
     </>
   );

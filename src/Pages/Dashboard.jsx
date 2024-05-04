@@ -199,8 +199,7 @@ const Dashboard = () => {
                       <Button
                         onClick={() => {
                           console.log("🚀 ~ Dashboard ~ id:", id);
-
-                          navigate(`/floor/${id}/view`);
+                          navigate(`/floor/${id}`);
                         }}
                         className="w-4/5 mt-2 bg-[#0F81C7] text-white font-bold"
                       >
