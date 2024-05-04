@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import { Button, Input, Select, SelectItem } from "@nextui-org/react";
 import DetailsTable from "../Components/DetailsTable";
 import WorkSpace from "../Components/editor/work-space";
@@ -5,8 +6,18 @@ import { useDispatch, useSelector } from "noval";
 import { useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { http } from "../network/http";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+
+const getMeta = (url, cb) => {
+  const img = new Image();
+  img.onload = () => cb(null, img);
+  img.onerror = (err) => cb(err);
+  img.src = url;
+  img.style = "max-width: 700px;";
+  console.log("🚀 ~ getMeta ~ img:", img);
+};
 import { getMetaImg, maxWidth } from "../Components/editor/shared";
+
 
 const roomsByValue = {};
 
@@ -16,12 +27,23 @@ const getRooms = (rooms) =>
     return { label: name, value: id };
   });
 
+const apiFloor = [
+  // { room: "1", type: "#1967d2" },
+  // { room: "2", type: "#FC611E" },
+];
+
+
+
+const initDataToPreview = (defaultData) => {
+
 const initData = (defaultData) => {
+
   if (!defaultData) return {};
   return JSON.parse(defaultData);
 };
 
 const PreviewFloor = () => {
+  const [floorInfo, setFloorInfo] = useState('');
   const { floorId } = useParams();
   const { dispatch } = useDispatch();
   const [floorMapData, setFloorMap] = useState("");
@@ -31,6 +53,19 @@ const PreviewFloor = () => {
     "mainEditor",
     "currentShape",
   ]);
+
+
+  async function getFloorInfo(floor_id = "") {
+    let data = await http
+      .get(`/get_floor?floor_id=${floor_id}`)
+      .catch((error) => {
+        console.log("My error building", error);
+      });
+    if (data?.status === 200) {
+      setFloorInfo(data.data.data);
+      console.log(data.data.data);
+    }
+  }
 
   const floorMapQuery = useQuery({
     queryKey: ["floorMapQuery", floorId],
@@ -69,6 +104,10 @@ const PreviewFloor = () => {
     }
     setIsLoading(false);
   };
+
+  useEffect(()=>{
+    getFloorInfo(floorId);
+  }, [floorId])
 
   return (
     <div className="pb-4">
@@ -147,7 +186,7 @@ const PreviewFloor = () => {
         </div>
       </div>
       <div className="bg-white  m-2 rounded-xl flex justify-center items-center shadow-sm ">
-        <DetailsTable />
+        <DetailsTable data={floorInfo} />
       </div>
     </div>
   );
