@@ -156,7 +156,7 @@ const Dashboard = () => {
                   {floor_map ? (
                     <img
                       className="w-1/2"
-                      src={`http://highnox.site${floor_map}`}
+                      src={`https://highnox.site${floor_map}`}
                       alt="floorMap"
                     />
                   ) : (
@@ -200,7 +200,7 @@ const Dashboard = () => {
                         onClick={() => {
                           console.log("🚀 ~ Dashboard ~ id:", id);
 
-                          navigate(`/floor/${id}`);
+                          navigate(`/floor/${id}/view`);
                         }}
                         className="w-4/5 mt-2 bg-[#0F81C7] text-white font-bold"
                       >
