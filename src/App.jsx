@@ -13,7 +13,7 @@ import noval from "noval";
 import createState from "./utils/noval-helper/create-state";
 import createDispatch from "./utils/noval-helper/create-dispatcher";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import ViewRoomsPage from "./Pages/ViewRoomsPage";
+// import ViewRoomsPage from "./Pages/ViewRoomsPage";
 
 const ProviderNoval = noval(createState, createDispatch);
 
