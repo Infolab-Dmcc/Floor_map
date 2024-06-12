@@ -99,7 +99,7 @@ const Dashboard = () => {
             ))}
           </Select>
           <Select
-            isDisabled={!buildings.length || !formHandler.values.city}
+            isDisabled={!buildings?.length || !formHandler.values.city}
             name="building"
             placeholder="Select Building"
             className="w-40"
@@ -107,7 +107,7 @@ const Dashboard = () => {
             onBlur={formHandler.handleBlur}
             value={formHandler.values.building}
           >
-            {buildings.map(({ id, name }) => (
+            {buildings?.map(({ id, name }) => (
               <SelectItem key={id} value={id}>
                 {name}
               </SelectItem>

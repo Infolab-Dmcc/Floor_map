@@ -44,6 +44,12 @@ function App() {
     { path: "*", element: <NotFound /> },
   ]);
 
+
+  // useEffect(() => {
+  //   localStorage.setItem("customer_dash_token", "8e453dd249b10ede0828004d0ec22b8197873f3d")
+  //   localStorage.setItem("customer_dash_url", "https://highnox.site/highnox")
+  // })
+
   return (
     <ProviderNoval>
       <NextUIProvider>
