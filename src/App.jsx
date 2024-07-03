@@ -5,7 +5,6 @@ import NotFound from "./Pages/Auth/NotFound";
 import UnAuthorized from "./Pages/Auth/UnAuthorized";
 import { NextUIProvider } from "@nextui-org/react";
 import NewFloor from "./Pages/NewFloor";
-import MyFloors from "./Pages/MyFloors";
 import { HTML5Backend } from "react-dnd-html5-backend";
 import { DndProvider } from "react-dnd";
 import PreviewFloor from "./Pages/PreviewFloor";
@@ -36,14 +35,12 @@ function App() {
         { index: true, element: <Dashboard /> },
         { path: "add-floor", element: <NewFloor /> },
         { path: "floor/:floorId", element: <PreviewFloor /> },
-        { path: "AddFloor", element: <MyFloors /> },
         // { path: "floor/:floorId/view", element: <ViewRoomsPage /> },
       ],
     },
     { path: "unauthorized", element: <UnAuthorized /> },
     { path: "*", element: <NotFound /> },
   ]);
-
 
   // useEffect(() => {
   //   localStorage.setItem("customer_dash_token", "8e453dd249b10ede0828004d0ec22b8197873f3d")
