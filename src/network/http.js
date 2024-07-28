@@ -10,7 +10,7 @@ export const getToken = () => {
 }
 
 export const http = axios.create({
-    baseURL: localStorage.getItem("customer_dash_url"),
+    baseURL: "https://highnox.site/highnox" //localStorage.getItem("customer_dash_url"),process.env.REACT_APP_BASE_URL,
     // withCredentials: true,
 });
 

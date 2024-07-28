@@ -35,7 +35,7 @@ const NewFloor = () => {
       formData.append("image_data", file);
       try {
         const res = await http.post(`/upload_floor_map`, formData);
-        navigate(`/floor/${res.data?.floor_id}`);
+        navigate(`/floor/${res.data?.floor_id}/edit`);
         console.log("🚀 ~ onSubmit: ~ res:", res)
       } catch (e) {
         console.log("error", e);

@@ -2,10 +2,13 @@ import React from "react";
 import Features from "./Features";
 import { useSelector } from "noval";
 import { http } from "../network/http";
+import { useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
-import { Checkbox, Input } from "@nextui-org/react";
+import { Button, Checkbox, Input } from "@nextui-org/react";
 
 export default function DetailsRoom({ floorId }) {
+  const navigate = useNavigate();
+  const isAdmin = useSelector("isAdmin");
   const { active, value } = useSelector("currentShape");
 
   const roomMapQuery = useQuery({
@@ -22,12 +25,23 @@ export default function DetailsRoom({ floorId }) {
   return (
     <div className="bg-white w-1/5 m-2 rounded-xl shadow-sm border-2">
       <div className="p-5 flex flex-col h-full gap-10">
-        <div className="flex flex-col justify-start ">
-          <div className="flex  justify-between">
-            <h1 className="text-xl font-semibold mb-4 pl-1 underline">
-              Room details:
-            </h1>
-            <h2 className="text-primary font-semibold">Edit</h2>
+        <div className="flex flex-col justify-start gap-5">
+          <div className="flex gap-5 justify-between">
+            <h1 className="text-xl font-semibold underline">Room details:</h1>
+            <Button
+              variant="solid"
+              disabled={!isAdmin}
+              onClick={() => navigate(`/floor/${floorId}/edit`)}
+              className="bg-[#0F81C7] text-white font-semibold"
+            >
+              <h2
+                // className={`${
+                //   isAdmin ? "text-primary" : "text-slate-500"
+                // } font-semibold`}
+              >
+                Edit
+              </h2>
+            </Button>
           </div>
           <Input
             isReadOnly

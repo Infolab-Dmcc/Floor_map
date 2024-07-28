@@ -1,35 +1,18 @@
 import * as Yup from "yup";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useFormik } from "formik";
 import { http } from "../network/http";
-import { useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import DetailsRoom from "../Components/DetailsRoom";
-import DetailsTable from "../Components/DetailsTable";
 import WorkSpace from "../Components/editor/work-space";
+import {  useParams } from "react-router-dom";
 import { Button, Select, SelectItem } from "@nextui-org/react";
-import { getMetaImg, maxWidth } from "../Components/editor/shared";
-
-const initDataToPreview = (defaultData, apiRooms) => {
-  if (!defaultData) return {};
-  const parseData = JSON.parse(defaultData);
-  const objects = parseData.objects;
-  objects.map(({ objects }) => {
-    const shape = objects?.[0];
-    const id = objects?.[2];
-    for (let i = 0; i < apiRooms.length; i++) {
-      const data = apiRooms[i];
-      if (id?.text == data?.id) {
-        shape.fill = data?.type;
-        shape.stroke = data?.type.substring(0, 7);
-        break;
-      }
-      continue;
-    }
-    return objects;
-  });
-  return parseData;
-};
+import {
+  getMetaImg,
+  initDataToPreview,
+  maxWidth,
+  timer,
+} from "../Components/editor/shared";
 
 const ViewRoomsPage = () => {
   const { floorId } = useParams();
@@ -40,10 +23,12 @@ const ViewRoomsPage = () => {
     queryKey: ["floorMapQuery", floorId],
     queryFn: async () => {
       const res = await http.get(`/get_floor?floor_id=${floorId}`);
-      const apiRooms = res.data?.data?.rooms.map(({ id, available }) => {
+      const rooms = res.data?.data?.rooms || [];
+      const apiRooms = rooms?.map(({ id, available, ...rest }) => {
         return {
           id,
           type: available ? "#1EFC5CCC" : "#FC611ECC",
+          ...rest,
         };
       });
       getMetaImg(
@@ -58,15 +43,12 @@ const ViewRoomsPage = () => {
       setFloorMap(initDataToPreview(resFloorMap?.data["Floor OBJ"], apiRooms));
       return res.data;
     },
-    onSuccess: (e) => {},
-    onError: (e) => {},
-    refetchOnWindowFocus: true,
   });
 
   const floorMap = floorMapQuery.data?.data;
-  const [buildings] = useState(["Building 1", "Building 2", "Building 3"]);
   const [cities] = useState(["City 1", "City 2", "City 3"]);
   const [floors] = useState(["Floor 1", "Floor 2", "Floor 3"]);
+  const [buildings] = useState(["Building 1", "Building 2", "Building 3"]);
 
   const formHandler = useFormik({
     initialValues: {
@@ -83,6 +65,14 @@ const ViewRoomsPage = () => {
       console.log(values);
     },
   });
+
+  useEffect(() => {
+    let refetchEvrey_1 = setInterval(() => {
+      floorMapQuery.refetch();
+    }, timer * 1000);
+
+    return () => clearInterval(refetchEvrey_1);
+  }, []);
 
   return (
     <>
@@ -186,7 +176,6 @@ const ViewRoomsPage = () => {
           </div>
           <DetailsRoom floorId={floorId} />
         </div>
-        
       </div>
     </>
   );

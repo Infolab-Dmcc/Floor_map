@@ -16,8 +16,9 @@ const createDispatch = (data, tools, actions) => {
     };
 
     const updateByRoom = () => {
-        const roomId = payload?.roomId || '1'
-        const roomName = payload?.roomName || '1'
+        const roomId = payload?.roomId
+        if (!roomId) return
+        const roomName = payload?.roomName
         const element = editorCanvas?.getActiveObject();
         if (!element || element?.lockMovementX) return;
         if (Array.isArray(element?._objects)) {

@@ -1,4 +1,5 @@
 const createState = {
+    isAdmin: false,
     mainEditor: {},
     currentShape: {
         active: false,

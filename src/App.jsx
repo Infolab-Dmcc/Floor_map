@@ -12,7 +12,7 @@ import noval from "noval";
 import createState from "./utils/noval-helper/create-state";
 import createDispatch from "./utils/noval-helper/create-dispatcher";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-// import ViewRoomsPage from "./Pages/ViewRoomsPage";
+import ViewRoomsPage from "./Pages/ViewRoomsPage";
 
 const ProviderNoval = noval(createState, createDispatch);
 
@@ -34,8 +34,8 @@ function App() {
       children: [
         { index: true, element: <Dashboard /> },
         { path: "add-floor", element: <NewFloor /> },
-        { path: "floor/:floorId", element: <PreviewFloor /> },
-        // { path: "floor/:floorId/view", element: <ViewRoomsPage /> },
+        { path: "floor/:floorId/edit", element: <PreviewFloor /> },
+        { path: "floor/:floorId/view", element: <ViewRoomsPage /> },
       ],
     },
     { path: "unauthorized", element: <UnAuthorized /> },
