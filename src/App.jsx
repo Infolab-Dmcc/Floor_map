@@ -13,6 +13,7 @@ import createState from "./utils/noval-helper/create-state";
 import createDispatch from "./utils/noval-helper/create-dispatcher";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import ViewRoomsPage from "./Pages/ViewRoomsPage";
+import { useEffect } from "react";
 
 const ProviderNoval = noval(createState, createDispatch);
 
@@ -42,10 +43,11 @@ function App() {
     { path: "*", element: <NotFound /> },
   ]);
 
-  // useEffect(() => {
-  //   localStorage.setItem("customer_dash_token", "8e453dd249b10ede0828004d0ec22b8197873f3d")
-  //   localStorage.setItem("customer_dash_url", "https://highnox.site/highnox")
-  // })
+  useEffect(() => {
+    //http://207.154.212.192:8069
+    localStorage.setItem("roles", "admin");
+    localStorage.setItem("customer_dash_url", "https://highnox.site/highnox");
+  }, []);
 
   return (
     <ProviderNoval>

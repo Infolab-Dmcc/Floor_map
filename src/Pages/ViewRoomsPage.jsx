@@ -1,11 +1,10 @@
 import * as Yup from "yup";
 import { useEffect, useState } from "react";
 import { useFormik } from "formik";
-import { http } from "../network/http";
 import { useQuery } from "@tanstack/react-query";
 import DetailsRoom from "../Components/DetailsRoom";
 import WorkSpace from "../Components/editor/work-space";
-import {  useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { Button, Select, SelectItem } from "@nextui-org/react";
 import {
   getMetaImg,
@@ -13,16 +12,19 @@ import {
   maxWidth,
   timer,
 } from "../Components/editor/shared";
+import { useSelector } from "noval";
+import axios from "axios";
 
 const ViewRoomsPage = () => {
   const { floorId } = useParams();
+  const baseUrl = useSelector("baseUrl");
   const [floorMapData, setFloorMap] = useState("");
   const [size, setSize] = useState({ width: 0, height: 0 });
 
   const floorMapQuery = useQuery({
-    queryKey: ["floorMapQuery", floorId],
+    queryKey: ["floorMapQuery", baseUrl, floorId],
     queryFn: async () => {
-      const res = await http.get(`/get_floor?floor_id=${floorId}`);
+      const res = await axios.get(`${baseUrl}/get_floor?floor_id=${floorId}`);
       const rooms = res.data?.data?.rooms || [];
       const apiRooms = rooms?.map(({ id, available, ...rest }) => {
         return {
@@ -39,7 +41,7 @@ const ViewRoomsPage = () => {
           setSize({ width, height: img?.naturalHeight });
         }
       );
-      const resFloorMap = await http.get(`/get_floor_map?floor_id=${floorId}`);
+      const resFloorMap = await axios.get(`${baseUrl}/get_floor_map?floor_id=${floorId}`);
       setFloorMap(initDataToPreview(resFloorMap?.data["Floor OBJ"], apiRooms));
       return res.data;
     },

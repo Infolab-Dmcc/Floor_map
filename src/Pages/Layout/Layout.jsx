@@ -1,18 +1,16 @@
 import { Outlet } from "react-router-dom";
 import NavBar from "./NavBar";
-import { useQuery } from "@tanstack/react-query";
-import { http } from "../../network/http";
+import { useEffect } from "react";
+import { useDispatch } from "noval";
 
 const Layout = () => {
-  //   useQuery({
-  //     queryKey: ["role"],
-  //     queryFn: async () => {
-  //         localStorage.getItem("floor_map_admin")
-  //       const res = await http.get(`/floor_map_admin`);
-  //       console.log("🚀 ~ queryFn: ~ res:", res);
-  //       return res.data;
-  //     },
-  //   });
+  const { dispatch } = useDispatch();
+
+  useEffect(() => {
+    const roles = localStorage.getItem("roles");
+    const baseUrl = localStorage.getItem("customer_dash_url");
+    dispatch({ baseUrl, roles });
+  }, []);
 
   return (
     <div className="w-full h-screen flex ">

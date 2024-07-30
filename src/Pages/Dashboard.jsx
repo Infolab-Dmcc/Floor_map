@@ -5,20 +5,22 @@ import { useFormik } from "formik";
 import { useEffect, useState } from "react";
 import * as Yup from "yup";
 import { ClockLoader } from "react-spinners";
-import { http } from "../network/http";
 import { useNavigate } from "react-router";
+import axios from "axios";
+import { useSelector } from "noval";
 
 const Dashboard = () => {
   const navigate = useNavigate();
-  const [buildings, setBuildings] = useState([]);
+  const baseUrl = useSelector("baseUrl");
   const [cities, SetCities] = useState([]);
   const [floors, setFloors] = useState([]);
+  const [buildings, setBuildings] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
 
   async function getFloors(state_id = "", building_id = "") {
     setIsLoading(true);
-    let data = await http
-      .get(`/get_floor_info?state_id=${state_id}&building_id=${building_id}`)
+    let data = await axios
+      .get(`${baseUrl}/get_floor_info?state_id=${state_id}&building_id=${building_id}`)
       .catch((error) => {
         console.log("My error 321", error);
         setIsLoading(false);
@@ -30,7 +32,7 @@ const Dashboard = () => {
   }
 
   async function getCities() {
-    let data = await http.get("/cities").catch((error) => {
+    let data = await axios.get(`${baseUrl}/cities`).catch((error) => {
       console.log("My error", error);
     });
     if (data?.status === 200) {
@@ -39,8 +41,8 @@ const Dashboard = () => {
   }
 
   async function getBuildings(city_id = "") {
-    let data = await http
-      .get(`/buildings?city_id=${city_id}`)
+    let data = await axios
+      .get(`${baseUrl}/buildings?city_id=${city_id}`)
       .catch((error) => {
         console.log("My error building", error);
       });
@@ -68,7 +70,7 @@ const Dashboard = () => {
   useEffect(() => {
     getFloors();
     getCities();
-  }, []);
+  }, [baseUrl]);
 
   useEffect(() => {
     getBuildings(formHandler.values.city);

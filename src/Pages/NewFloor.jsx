@@ -6,7 +6,8 @@ import { IoMdCloudUpload } from "react-icons/io";
 import { DeleteButton } from "../Components/DeleteButton";
 import { Button, Select, SelectItem } from "@nextui-org/react";
 import { useQuery } from "@tanstack/react-query";
-import { http } from "../network/http";
+import { useSelector } from "noval";
+import axios from "axios";
 
 const validationSchema = Yup.object({
   building: Yup.string().required("required"),
@@ -17,6 +18,7 @@ const validationSchema = Yup.object({
 const NewFloor = () => {
   const navigate = useNavigate();
   const [file, setFile] = useState();
+  const baseUrl = useSelector("baseUrl");
   const [isLoading, setIsLoading] = useState(false);
 
   const formHandler = useFormik({
@@ -27,16 +29,14 @@ const NewFloor = () => {
     },
     validationSchema,
     onSubmit: async ({ floor }) => {
-      console.log("🚀 ~ onSubmit: ~ floor:", floor);
-      // file
       const formData = new FormData();
       setIsLoading(true);
       formData.append("floor_id", floor);
       formData.append("image_data", file);
       try {
-        const res = await http.post(`/upload_floor_map`, formData);
+        const res = await axios.post(`${baseUrl}/upload_floor_map`, formData);
         navigate(`/floor/${res.data?.floor_id}/edit`);
-        console.log("🚀 ~ onSubmit: ~ res:", res)
+        console.log("🚀 ~ onSubmit: ~ res:", res);
       } catch (e) {
         console.log("error", e);
       }
@@ -47,25 +47,25 @@ const NewFloor = () => {
   const { building, city, floor } = formHandler.values;
 
   const { data: citiesRes } = useQuery({
-    queryKey: ["citiesQuery"],
+    queryKey: ["citiesQuery", baseUrl],
     queryFn: async () => {
-      const res = await http.get(`/cities`);
+      const res = await axios.get(`${baseUrl}/cities`);
       return res.data;
     },
   });
 
   const { data: buildingsRes } = useQuery({
-    queryKey: ["buildingsQuery", city],
+    queryKey: ["buildingsQuery", baseUrl, city],
     queryFn: async () => {
-      const res = await http.get(`/buildings?city_id=${city}`);
+      const res = await axios.get(`${baseUrl}/buildings?city_id=${city}`);
       return res.data;
     },
   });
 
   const { data: floorsRes } = useQuery({
-    queryKey: ["floorsQuery", building],
+    queryKey: ["floorsQuery", baseUrl, building],
     queryFn: async () => {
-      const res = await http.get(`/floors?building_id=${building}`);
+      const res = await axios.get(`${baseUrl}/floors?building_id=${building}`);
       return res.data;
     },
   });

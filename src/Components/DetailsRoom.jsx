@@ -1,25 +1,26 @@
 import React from "react";
 import Features from "./Features";
 import { useSelector } from "noval";
-import { http } from "../network/http";
 import { useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { Button, Checkbox, Input } from "@nextui-org/react";
+import axios from "axios";
 
 export default function DetailsRoom({ floorId }) {
   const navigate = useNavigate();
-  const isAdmin = useSelector("isAdmin");
-  const { active, value } = useSelector("currentShape");
+  const roles = useSelector("roles");
+  const { active, value, baseUrl } = useSelector("currentShape");
 
   const roomMapQuery = useQuery({
-    queryKey: ["roomMapQuery", value],
+    queryKey: ["roomMapQuery", baseUrl, value],
     queryFn: async () => {
-      const res = await http.get(`/get_room?room_id=${value}`);
+      const res = await axios.get(`${baseUrl}/get_room?room_id=${value}`);
       return res.data;
     },
     enabled: Boolean(value),
   });
 
+  const isAdmin = roles === "admin";
   const roomMap = roomMapQuery.data?.data;
 
   return (
@@ -32,12 +33,14 @@ export default function DetailsRoom({ floorId }) {
               variant="solid"
               disabled={!isAdmin}
               onClick={() => navigate(`/floor/${floorId}/edit`)}
-              className="bg-[#0F81C7] text-white font-semibold"
+              className={`${
+                isAdmin ? "bg-[#0F81C7]" : ""
+              } text-white font-semibold`}
             >
               <h2
-                // className={`${
-                //   isAdmin ? "text-primary" : "text-slate-500"
-                // } font-semibold`}
+              // className={`${
+              //   isAdmin ? "text-primary" : "text-slate-500"
+              // } font-semibold`}
               >
                 Edit
               </h2>

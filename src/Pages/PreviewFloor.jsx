@@ -1,10 +1,8 @@
 import { Button, Input, Select, SelectItem } from "@nextui-org/react";
-// import DetailsTable from "../Components/DetailsTable";
 import WorkSpace from "../Components/editor/work-space";
 import { useDispatch, useSelector } from "noval";
 import { useNavigate, useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
-import { http } from "../network/http";
 import { useEffect, useState } from "react";
 import DetailsTable from "../Components/DetailsTable";
 import {
@@ -12,6 +10,7 @@ import {
   getMetaImg,
   initDataToPreview,
 } from "../Components/editor/shared";
+import axios from "axios";
 
 const roomsByValue = {};
 
@@ -31,16 +30,17 @@ const PreviewFloor = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [disabledKeys, setDisabledKeys] = useState([]);
   const [size, setSize] = useState({ width: 0, height: 0 });
-  const isAdmin = useSelector("isAdmin");
+  const [roles, baseUrl] = useSelector(["roles", "baseUrl"]);
   const [mainEditor, { active, value }] = useSelector([
     "mainEditor",
     "currentShape",
   ]);
+  const isAdmin = roles === "admin";
 
   const floorMapQuery = useQuery({
-    queryKey: ["floorMapQuery", floorId],
+    queryKey: ["floorMapQuery", baseUrl, floorId],
     queryFn: async () => {
-      const res = await http.get(`/get_floor?floor_id=${floorId}`);
+      const res = await axios.get(`${baseUrl}/get_floor?floor_id=${floorId}`);
       const rooms = res.data?.data?.rooms || [];
       setRoomItems(getRooms(rooms));
       const apiRooms = rooms?.map(({ id, available, ...rest }) => {
@@ -58,7 +58,9 @@ const PreviewFloor = () => {
           setSize({ width, height: img?.naturalHeight });
         }
       );
-      const resFloorMap = await http.get(`/get_floor_map?floor_id=${floorId}`);
+      const resFloorMap = await axios.get(
+        `${baseUrl}/get_floor_map?floor_id=${floorId}`
+      );
       setFloorMap(
         initDataToPreview(resFloorMap?.data["Floor OBJ"], apiRooms, (keys) =>
           setDisabledKeys(keys)
@@ -75,7 +77,7 @@ const PreviewFloor = () => {
 
     setIsLoading(true);
     try {
-      await http.post(`/set_floor_map?floor_id=${floorId}`, {
+      await axios.post(`${baseUrl}/set_floor_map?floor_id=${floorId}`, {
         floor_obj: JSON.stringify(json),
       });
     } catch (e) {
@@ -87,7 +89,7 @@ const PreviewFloor = () => {
   useEffect(() => {
     const fetchFloorInfo = async () => {
       try {
-        let data = await http.get(`/get_floor?floor_id=${floorId}`);
+        let data = await axios.get(`${baseUrl}/get_floor?floor_id=${floorId}`);
         if (data?.status === 200) {
           setFloorInfo(data.data.data);
           console.log("fetchFloorInfo:", data.data.data);
@@ -97,7 +99,7 @@ const PreviewFloor = () => {
       }
     };
     fetchFloorInfo();
-  }, [floorId]);
+  }, [floorId, baseUrl]);
 
   if (!isAdmin) return navigate(`/floor/${floorId}/view`);
 
