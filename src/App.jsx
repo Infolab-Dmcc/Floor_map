@@ -13,7 +13,6 @@ import createState from "./utils/noval-helper/create-state";
 import createDispatch from "./utils/noval-helper/create-dispatcher";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import ViewRoomsPage from "./Pages/ViewRoomsPage";
-import { useEffect } from "react";
 
 const ProviderNoval = noval(createState, createDispatch);
 
@@ -42,12 +41,6 @@ function App() {
     { path: "unauthorized", element: <UnAuthorized /> },
     { path: "*", element: <NotFound /> },
   ]);
-
-  useEffect(() => {
-    //http://207.154.212.192:8069
-    localStorage.setItem("roles", "admin");
-    localStorage.setItem("customer_dash_url", "https://highnox.site/highnox");
-  }, []);
 
   return (
     <ProviderNoval>
