@@ -33,15 +33,17 @@ const ViewRoomsPage = () => {
           ...rest,
         };
       });
-      getMetaImg(
-        `https://highnox.site${res?.data?.data?.floor_map}`,
-        (_, img) => {
-          const width =
-            img?.naturalWidth >= maxWidth ? maxWidth : img?.naturalWidth;
-          setSize({ width, height: img?.naturalHeight });
-        }
+      
+      let baseUrlImg = baseUrl.split("/highnox");
+      baseUrlImg = `${baseUrlImg?.[0]}${res?.data?.data?.floor_map}`;
+      getMetaImg(baseUrlImg, (_, img) => {
+        const width =
+          img?.naturalWidth >= maxWidth ? maxWidth : img?.naturalWidth;
+        setSize({ width, height: img?.naturalHeight });
+      });
+      const resFloorMap = await axios.get(
+        `${baseUrl}/get_floor_map?floor_id=${floorId}`
       );
-      const resFloorMap = await axios.get(`${baseUrl}/get_floor_map?floor_id=${floorId}`);
       setFloorMap(initDataToPreview(resFloorMap?.data["Floor OBJ"], apiRooms));
       return res.data;
     },
