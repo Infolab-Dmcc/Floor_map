@@ -29,17 +29,17 @@ const queryClient = new QueryClient({
 function App() {
   const routers = createBrowserRouter([
     {
-      path: "",
+      path: "/floor",
       element: <Layout />,
       children: [
-        { index: true, element: <Dashboard /> },
-        { path: "add-floor", element: <NewFloor /> },
-        { path: "floor/:floorId/edit", element: <PreviewFloor /> },
-        { path: "floor/:floorId/view", element: <ViewRoomsPage /> },
+        { path: "", element: <Dashboard /> },
+        { path: "add", element: <NewFloor /> },
+        { path: ":floorId/edit", element: <PreviewFloor /> },
+        { path: ":floorId/view", element: <ViewRoomsPage /> },
       ],
     },
     { path: "unauthorized", element: <UnAuthorized /> },
-    { path: "*", element: <NotFound /> },
+    { path: "/floor/*", element: <NotFound /> },
   ]);
 
   return (

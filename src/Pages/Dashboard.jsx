@@ -200,7 +200,6 @@ const Dashboard = () => {
                     {floor_map ? (
                       <Button
                         onClick={() => {
-                          console.log("🚀 ~ Dashboard ~ id:", id);
                           navigate(`/floor/${id}/view`);
                         }}
                         className="w-4/5 mt-2 bg-[#0F81C7] text-white font-bold"
@@ -209,7 +208,7 @@ const Dashboard = () => {
                       </Button>
                     ) : (
                       <Button
-                        onClick={() => navigate(`/add-floor`)}
+                        onClick={() => navigate(`/floor/add`)}
                         className="w-4/5 mt-2 bg-[#0F81C7] text-white font-bold"
                       >
                         Add Floor Map

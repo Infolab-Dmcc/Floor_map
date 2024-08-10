@@ -19,12 +19,12 @@ const NavBar = () => {
         </DropdownTrigger>
         <DropdownMenu aria-label="Static Actions">
           <DropdownItem key="new">
-            <Link to={"/"}>
+            <Link to={"/floor/"}>
               <p>Dashboard</p>
             </Link>
           </DropdownItem>
           <DropdownItem key="copy">
-            <Link to={"/add-floor"}>
+            <Link to={"/floor/add"}>
               <p>New Floor</p>
             </Link>
           </DropdownItem>
