@@ -1,11 +1,11 @@
 import {
-  Avatar,
   Button,
   Dropdown,
   DropdownItem,
   DropdownMenu,
   DropdownTrigger,
 } from "@nextui-org/react";
+import { SlLogout } from "react-icons/sl";
 import { Link } from "react-router-dom";
 
 const NavBar = () => {
@@ -30,12 +30,16 @@ const NavBar = () => {
           </DropdownItem>
         </DropdownMenu>
       </Dropdown>
-      <div className="flex items-center gap-2">
-        <p className="text-white font-semibold text-sm">Super Admin</p>
-        <Avatar
-          src="https://i.pravatar.cc/150?u=a042581f4e29026024d"
-          size="md"
-        />
+      <div className="flex items-center justify-center gap-2">
+        <Link
+          to={localStorage.getItem("customer_dash_url")?.slice(0, 20) + `/web`}
+          className="flex items-center p-2 mx-3 mb-1 text-white rounded-lg transition duration-75 hover:bg-[#66b0de] focus:bg-[#66b0de] group"
+        >
+          <SlLogout className="flex-shrink-0 w-6 h-6 text-white transition duration-75  " />
+          <span className="flex-1 ms-3 whitespace-nowrap  font-semibold">
+            Back to system
+          </span>
+        </Link>
       </div>
     </div>
   );
