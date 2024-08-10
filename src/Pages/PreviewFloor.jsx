@@ -36,9 +36,10 @@ const PreviewFloor = () => {
     "currentShape",
   ]);
   const isAdmin = roles === "admin";
+  const baseImgUrl = baseUrl.split("/highnox")?.[0];
 
   const floorMapQuery = useQuery({
-    queryKey: ["floorMapQuery", baseUrl, floorId],
+    queryKey: ["floorMapQuery", baseUrl, floorId, baseImgUrl],
     queryFn: async () => {
       const res = await axios.get(`${baseUrl}/get_floor?floor_id=${floorId}`);
       const rooms = res.data?.data?.rooms || [];
@@ -51,9 +52,8 @@ const PreviewFloor = () => {
         };
       });
 
-      let baseUrlImg = baseUrl.split("/highnox");
-      baseUrlImg = `${baseUrlImg?.[0]}${res?.data?.data?.floor_map}`;
-      getMetaImg(baseUrlImg, (_, img) => {
+      const BaseUrlWithsrc = `${baseImgUrl}${res?.data?.data?.floor_map}`;
+      getMetaImg(BaseUrlWithsrc, (_, img) => {
         const width =
           img?.naturalWidth >= maxWidth ? maxWidth : img?.naturalWidth;
         setSize({ width, height: img?.naturalHeight });
@@ -117,7 +117,7 @@ const PreviewFloor = () => {
               isControlled={true}
               imgUrl={
                 floorMap?.floor_map
-                  ? `http://highnox.site${floorMap?.floor_map}`
+                  ? `${baseImgUrl}${floorMap?.floor_map}`
                   : "/test.png"
               }
             />
