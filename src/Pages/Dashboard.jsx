@@ -12,6 +12,7 @@ import { useSelector } from "noval";
 const Dashboard = () => {
   const navigate = useNavigate();
   const baseUrl = useSelector("baseUrl");
+  console.log("🚀 ~ Dashboard ~ baseUrl:", baseUrl);
   const [cities, SetCities] = useState([]);
   const [floors, setFloors] = useState([]);
   const [buildings, setBuildings] = useState([]);
@@ -20,7 +21,9 @@ const Dashboard = () => {
   async function getFloors(state_id = "", building_id = "") {
     setIsLoading(true);
     let data = await axios
-      .get(`${baseUrl}/get_floor_info?state_id=${state_id}&building_id=${building_id}`)
+      .get(
+        `${baseUrl}/get_floor_info?state_id=${state_id}&building_id=${building_id}`
+      )
       .catch((error) => {
         console.log("My error 321", error);
         setIsLoading(false);
@@ -68,13 +71,17 @@ const Dashboard = () => {
   });
 
   useEffect(() => {
-    getFloors();
-    getCities();
+    if (baseUrl) {
+      getFloors();
+      getCities();
+    }
   }, [baseUrl]);
 
   useEffect(() => {
-    getBuildings(formHandler.values.city);
-  }, [formHandler.values.city]);
+    if (baseUrl && formHandler.values.city) {
+      getBuildings(formHandler.values.city);
+    }
+  }, [formHandler.values.city, baseUrl]);
 
   return (
     <>

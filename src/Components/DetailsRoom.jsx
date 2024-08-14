@@ -9,7 +9,8 @@ import axios from "axios";
 export default function DetailsRoom({ floorId }) {
   const navigate = useNavigate();
   const roles = useSelector("roles");
-  const { active, value, baseUrl } = useSelector("currentShape");
+  const baseUrl = useSelector("baseUrl");
+  const { active, value } = useSelector("currentShape");
 
   const roomMapQuery = useQuery({
     queryKey: ["roomMapQuery", baseUrl, value],

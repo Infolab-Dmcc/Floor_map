@@ -30,7 +30,8 @@ const PreviewFloor = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [disabledKeys, setDisabledKeys] = useState([]);
   const [size, setSize] = useState({ width: 0, height: 0 });
-  const [roles, baseUrl] = useSelector(["roles", "baseUrl"]);
+  const roles = useSelector("roles");
+  const baseUrl = useSelector("baseUrl");
   const [mainEditor, { active, value }] = useSelector([
     "mainEditor",
     "currentShape",
