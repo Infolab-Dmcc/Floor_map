@@ -36,7 +36,6 @@ const NewFloor = () => {
       try {
         const res = await axios.post(`${baseUrl}/upload_floor_map`, formData);
         navigate(`/floor/${res.data?.floor_id}/edit`);
-        console.log("🚀 ~ onSubmit: ~ res:", res);
       } catch (e) {
         console.log("error", e);
       }

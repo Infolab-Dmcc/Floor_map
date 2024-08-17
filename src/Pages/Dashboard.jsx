@@ -12,7 +12,6 @@ import { useSelector } from "noval";
 const Dashboard = () => {
   const navigate = useNavigate();
   const baseUrl = useSelector("baseUrl");
-  console.log("🚀 ~ Dashboard ~ baseUrl:", baseUrl);
   const [cities, SetCities] = useState([]);
   const [floors, setFloors] = useState([]);
   const [buildings, setBuildings] = useState([]);
@@ -157,6 +156,8 @@ const Dashboard = () => {
               city,
               building,
             }) => {
+              const baseImgUrl = baseUrl.split("/highnox")?.[0];
+              console.log("🚀 ~ Dashboard ~ floor_map:", floor_map);
               return (
                 <div
                   key={id}
@@ -165,7 +166,7 @@ const Dashboard = () => {
                   {floor_map ? (
                     <img
                       className="w-1/2"
-                      src={`https://highnox.site${floor_map}`}
+                      src={`${baseImgUrl}${floor_map}`}
                       alt="floorMap"
                     />
                   ) : (

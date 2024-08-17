@@ -38,13 +38,7 @@ export default function DetailsRoom({ floorId }) {
                 isAdmin ? "bg-[#0F81C7]" : ""
               } text-white font-semibold`}
             >
-              <h2
-              // className={`${
-              //   isAdmin ? "text-primary" : "text-slate-500"
-              // } font-semibold`}
-              >
-                Edit
-              </h2>
+              <h2>Edit</h2>
             </Button>
           </div>
           <Input

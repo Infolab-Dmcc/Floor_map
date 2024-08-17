@@ -10,7 +10,6 @@ import {
 } from "@nextui-org/react";
 
 export default function DetailsTable({ data }) {
-  console.log("🚀 ~ DetailsTable ~ data:", data);
   if (!data) return null;
   return (
     <Table
