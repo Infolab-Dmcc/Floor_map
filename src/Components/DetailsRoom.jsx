@@ -1,10 +1,10 @@
 import React from "react";
+import axios from "axios";
 import Features from "./Features";
 import { useSelector } from "noval";
 import { useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { Button, Checkbox, Input } from "@nextui-org/react";
-import axios from "axios";
 
 export default function DetailsRoom({ floorId }) {
   const navigate = useNavigate();
@@ -23,6 +23,7 @@ export default function DetailsRoom({ floorId }) {
 
   const isAdmin = roles === "admin";
   const roomMap = roomMapQuery.data?.data;
+  const contract_details = roomMap?.contract_details;
 
   return (
     <div className="bg-white w-1/5 m-2 rounded-xl shadow-sm border-2">
@@ -67,7 +68,7 @@ export default function DetailsRoom({ floorId }) {
           />
 
           <Input
-            label="Monthly rent / Month $"
+            label="List Price"
             labelPlacement="outside"
             className="max-w-xs mb-3"
             value={roomMap?.price}
@@ -87,62 +88,64 @@ export default function DetailsRoom({ floorId }) {
               Vacant
             </Checkbox>
           </div>
-          <h5>
-            Available From:
-            <span>
-              {roomMap?.contract_details?.end_date?.split(" ").shift()}
-            </span>
-          </h5>
+          {contract_details?.end_date ? (
+            <h5>
+              Available From:
+              <span>{contract_details?.end_date.split(" ").shift()}</span>
+            </h5>
+          ) : null}
           <Features />
         </div>
-        <div className="flex flex-col justify-start ">
-          <h1 className="text-xl font-semibold mb-4 pl-1 underline">
-            Contract details:
-          </h1>
-          <Input
-            isReadOnly
-            label="Customer name"
-            labelPlacement="outside"
-            className="max-w-xs mb-3"
-            value={roomMap?.contract_details?.customer_name}
-            isDisabled={!active}
-          />
-          <Input
-            label="Contract Start Date"
-            labelPlacement="outside"
-            className="max-w-xs mb-3"
-            value={roomMap?.contract_details?.start_date?.split(" ").shift()}
-            isDisabled={!active}
-          />
-          <Input
-            label="Contract End Date"
-            labelPlacement="outside"
-            className="max-w-xs mb-3"
-            value={roomMap?.contract_details?.end_date?.split(" ").shift()}
-            isDisabled={!active}
-          />
-          <Input
-            label="Contract SQM"
-            labelPlacement="outside"
-            className="max-w-xs mb-3"
-            value={roomMap?.contract_details?.sqm}
-            isDisabled={!active}
-          />
-          <Input
-            label="Monthly rent $:"
-            labelPlacement="outside"
-            className="max-w-xs mb-3"
-            value={roomMap?.price}
-            isDisabled={!active}
-          />
-          <Input
-            label="Discount $:"
-            labelPlacement="outside"
-            className="max-w-xs mb-3"
-            value={roomMap?.contract_details?.discount}
-            isDisabled={!active}
-          />
-        </div>
+        {contract_details?.customer_name ? (
+          <div className="flex flex-col justify-start ">
+            <h1 className="text-xl font-semibold mb-4 pl-1 underline">
+              Contract details:
+            </h1>
+            <Input
+              isReadOnly
+              label="Customer name"
+              labelPlacement="outside"
+              className="max-w-xs mb-3"
+              value={contract_details?.customer_name}
+              isDisabled={!active}
+            />
+            <Input
+              label="Contract Start Date"
+              labelPlacement="outside"
+              className="max-w-xs mb-3"
+              value={contract_details?.start_date?.split(" ").shift()}
+              isDisabled={!active}
+            />
+            <Input
+              label="Contract End Date"
+              labelPlacement="outside"
+              className="max-w-xs mb-3"
+              value={contract_details?.end_date?.split(" ").shift()}
+              isDisabled={!active}
+            />
+            <Input
+              label="Contract SQM"
+              labelPlacement="outside"
+              className="max-w-xs mb-3"
+              value={contract_details?.sqm}
+              isDisabled={!active}
+            />
+            <Input
+              label="Monthly rent:"
+              labelPlacement="outside"
+              className="max-w-xs mb-3"
+              value={contract_details?.price_unit}
+              isDisabled={!active}
+            />
+            <Input
+              label="Discount:"
+              labelPlacement="outside"
+              className="max-w-xs mb-3"
+              value={contract_details?.discount}
+              isDisabled={!active}
+            />
+          </div>
+        ) : null}
       </div>
     </div>
   );

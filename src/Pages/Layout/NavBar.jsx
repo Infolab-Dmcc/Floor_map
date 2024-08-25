@@ -32,7 +32,7 @@ const NavBar = () => {
       </Dropdown>
       <div className="flex items-center justify-center gap-2">
         <Link
-          to={localStorage.getItem("customer_dash_url")?.slice(0, 20) + `/web`}
+          to={`/web`}
           className="flex items-center p-2 mx-3 mb-1 text-white rounded-lg transition duration-75 hover:bg-[#66b0de] focus:bg-[#66b0de] group"
         >
           <SlLogout className="flex-shrink-0 w-6 h-6 text-white transition duration-75  " />
